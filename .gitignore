@@ -1,0 +1,16 @@
+!gradle-wrapper.jar
+/.gradle
+/out/
+build/
+/test-output/
+.idea/
+*.class
+*.swp
+*.swo
+*.iws
+*.iml
+.DS_Store
+/local.properties
+/.env
+/email.txt
+gen/

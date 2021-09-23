@@ -1,0 +1,3 @@
+<configuration>
+    <logger name="com.github.jknack.handlebars" level="info" />
+</configuration>
