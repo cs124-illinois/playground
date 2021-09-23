@@ -1,2 +1,2 @@
 rootProject.name = "playground"
-include("lib")
+include("lib", "server")

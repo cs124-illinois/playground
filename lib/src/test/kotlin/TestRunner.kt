@@ -1,42 +1,45 @@
 @file:Suppress("SpellCheckingInspection")
 
+import edu.illinois.cs.cs124.playground.Submission
+import edu.illinois.cs.cs124.playground.run
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 class TestRunner : StringSpec({
     "it should run a helloworld container" {
-        run("cs124/helloworld").also {
-            it.timedOut shouldBe false
-            it.output shouldBe "Hello, world!"
+        Submission("cs124/helloworld").run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, world!"
         }
     }
     "it should stop a spinning container" {
-        run("cs124/spinner", 1000).also {
-            it.timedOut shouldBe true
+        Submission("cs124/spinner", timeout = 1000).run().apply {
+            timedOut shouldBe true
         }
     }
     "it should run a Python container" {
-        run("cs124/python", 1000, mapOf("main.py" to """print("Hello, Python!")""")).also {
-            it.timedOut shouldBe false
-            it.output shouldBe "Hello, Python!"
+        Submission("cs124/python", mapOf("main.py" to """print("Hello, Python!")""")).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Python!"
         }
     }
     "it should stop a spinning Python container" {
-        run(
-            "cs124/python", 1000,
+        Submission(
+            "cs124/python",
             mapOf(
                 "main.py" to """
             |while True:
             |    i = 0
         """.trimMargin()
-            )
-        ).also {
-            it.timedOut shouldBe true
+            ),
+            1000
+        ).run().apply {
+            timedOut shouldBe true
         }
     }
     "it should run a CPP container" {
-        run(
-            "cs124/cpp", 1000,
+        Submission(
+            "cs124/cpp",
             mapOf(
                 "main.cpp" to """
             |#include <iostream>
@@ -45,14 +48,14 @@ class TestRunner : StringSpec({
             |  return 0;
             |}""".trimMargin()
             )
-        ).also {
-            it.timedOut shouldBe false
-            it.output shouldBe "Hello, CPP!"
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, CPP!"
         }
     }
     "it should stop a spinning CPP container" {
-        run(
-            "cs124/cpp", 1000,
+        Submission(
+            "cs124/cpp",
             mapOf(
                 "main.cpp" to """
             |#include <iostream>
@@ -60,9 +63,10 @@ class TestRunner : StringSpec({
             |  while (1) { }
             |  return 0;
             |}""".trimMargin()
-            )
-        ).also {
-            it.timedOut shouldBe true
+            ),
+            1000
+        ).run().apply {
+            timedOut shouldBe true
         }
     }
 })
