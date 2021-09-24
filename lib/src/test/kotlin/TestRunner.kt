@@ -18,19 +18,22 @@ class TestRunner : StringSpec({
         }
     }
     "it should run a Python container" {
-        Submission("cs124/python", mapOf("main.py" to """print("Hello, Python!")""")).run().apply {
+        Submission("cs124/playground-python", listOf(Submission.FakeFile("main.py", """print("Hello, Python!")"""))).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Python!"
         }
     }
     "it should stop a spinning Python container" {
         Submission(
-            "cs124/python",
-            mapOf(
-                "main.py" to """
+            "cs124/playground-python",
+            listOf(
+                Submission.FakeFile(
+                    "main.py",
+                    """
             |while True:
             |    i = 0
         """.trimMargin()
+                )
             ),
             1000
         ).run().apply {
@@ -39,14 +42,17 @@ class TestRunner : StringSpec({
     }
     "it should run a CPP container" {
         Submission(
-            "cs124/cpp",
-            mapOf(
-                "main.cpp" to """
+            "cs124/playground-cpp",
+            listOf(
+                Submission.FakeFile(
+                    "main.cpp",
+                    """
             |#include <iostream>
             |int main() {
             |  std::cout << "Hello, CPP!\n";
             |  return 0;
             |}""".trimMargin()
+                )
             )
         ).run().apply {
             timedOut shouldBe false
@@ -55,14 +61,17 @@ class TestRunner : StringSpec({
     }
     "it should stop a spinning CPP container" {
         Submission(
-            "cs124/cpp",
-            mapOf(
-                "main.cpp" to """
+            "cs124/playground-cpp",
+            listOf(
+                Submission.FakeFile(
+                    "main.cpp",
+                    """
             |#include <iostream>
             |int main() {
             |  while (1) { }
             |  return 0;
             |}""".trimMargin()
+                )
             ),
             1000
         ).run().apply {

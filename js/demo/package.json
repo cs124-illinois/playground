@@ -1,0 +1,36 @@
+{
+  "private": true,
+  "name": "demo",
+  "version": "0.1.0",
+  "scripts": {
+    "export": "next export -o dist && touch dist/.nojekyll",
+    "preexport": "rimraf dist && yarn build",
+    "build": "next build",
+    "lint": "next lint",
+    "serve": "next start",
+    "start": "next dev",
+    "prettier": "prettier -w --plugin=prettier-plugin-organize-imports . && prettier-package-json --write",
+    "backend": "yarn backend:up && yarn backend:down",
+    "backend:up": "docker compose --env-file .env.development up",
+    "backend:down": "docker compose --env-file .env.development down"
+  },
+  "dependencies": {
+    "@cs124/playground-react": "2021.9.0",
+    "@cs124/react-google-login": "^2021.7.0",
+    "next": "11.1.2",
+    "react": "17.0.2",
+    "react-ace": "9.4.4",
+    "react-dom": "17.0.2",
+    "runtypes": "6.4.1"
+  },
+  "devDependencies": {
+    "@types/react": "17.0.24",
+    "eslint": "7.32.0",
+    "eslint-config-next": "11.1.2",
+    "prettier": "2.4.1",
+    "prettier-package-json": "2.6.0",
+    "prettier-plugin-organize-imports": "2.3.4",
+    "sass": "1.42.1",
+    "typescript": "4.4.3"
+  }
+}

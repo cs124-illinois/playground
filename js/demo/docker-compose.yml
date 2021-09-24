@@ -1,0 +1,42 @@
+version: "3"
+services:
+  proxy:
+    ports:
+      - "8888:8888"
+    image: "cs124/playground-proxy:latest"
+    environment:
+      - "PLAYGROUND_SERVER=http://playground:8888"
+      - "MONGODB=mongodb://mongodb:27017/playground_demo"
+      - "GOOGLE_CLIENT_IDS=${NEXT_PUBLIC_GOOGLE_CLIENT_ID}"
+    depends_on:
+      - playground
+      - mongodb
+  playground:
+    image: "cs124/playground:latest"
+    depends_on:
+      - dind
+    environment:
+      - "DOCKER_HOST=dind:2375"
+      - "DIRECTORY=/grading/"
+      - "DOCKERUSER=${DOCKERUSER}"
+      - "DOCKERPASSWORD=${DOCKERPASSWORD}"
+    volumes:
+      - "./grading/:/grading/"
+  mongodb:
+    image: "bitnami/mongodb:4.4.3"
+    logging:
+      driver: "none"
+    volumes:
+      - "mongodb_data:/bitnami"
+  dind:
+    image: "docker:19.03-dind"
+    entrypoint: /bin/sh -c "rm -f /var/run/docker.pid && rm -f /var/run/docker/containerd/containerd.pid && dockerd --host=tcp://0.0.0.0:2375"
+    privileged: true
+    volumes:
+      - "dind_data:/var/lib/docker"
+      - "./grading/:/grading/"
+volumes:
+  mongodb_data:
+    driver: local
+  dind_data:
+    driver: local

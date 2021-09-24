@@ -1,4 +1,4 @@
-package edu.illinois.cs.cs125.questioner.server
+package edu.illinois.cs.cs124.playground.server
 
 import com.ryanharter.ktor.moshi.moshi
 import com.squareup.moshi.FromJson
@@ -9,6 +9,7 @@ import com.uchuhimo.konf.Config
 import com.uchuhimo.konf.ConfigSpec
 import edu.illinois.cs.cs124.playground.Result
 import edu.illinois.cs.cs124.playground.Submission
+import edu.illinois.cs.cs124.playground.load
 import edu.illinois.cs.cs124.playground.run
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -22,9 +23,16 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import java.io.IOException
+import java.net.ConnectException
+import java.net.InetSocketAddress
+import java.net.Socket
 import java.time.Instant
 import java.util.Properties
+import java.util.concurrent.TimeUnit
 
 private val serverStarted = Instant.now()
 private val logger = KotlinLogging.logger {}
@@ -34,6 +42,7 @@ object TopLevel : ConfigSpec("") {
     val dockerUser by optional<String?>(null)
     val dockerPassword by optional<String?>(null)
 }
+
 val configuration = Config { addSpec(TopLevel) }.from.env()
 
 class InstantAdapter {
@@ -78,15 +87,29 @@ fun Application.playground() {
         get("/") {
             call.respond(status)
         }
+        get("/image/{image...}") {
+            call.parameters.getAll("image")?.joinToString("/")?.also { image ->
+                try {
+                    image.load()
+                    logger.debug { "Loaded $image" }
+                    call.respond(HttpStatusCode.OK)
+                } catch (e: Exception) {
+                    logger.error { e }
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            } ?: call.respond(HttpStatusCode.BadRequest)
+        }
         post("/") {
-            val result = try {
-                call.receive<Submission>().run(tempRoot = configuration[TopLevel.directory])
-            } catch (e: Exception) {
-                logger.error { e }
-                call.respond(HttpStatusCode.BadRequest)
-                return@post
+            withContext(Dispatchers.IO) {
+                try {
+                    val result = call.receive<Submission>().run(tempRoot = configuration[TopLevel.directory])
+                    call.respond(result)
+                } catch (e: Exception) {
+                    logger.error { e }
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@withContext
+                }
             }
-            call.respond(result)
         }
     }
 }
@@ -113,11 +136,17 @@ fun dockerLogin(user: String, password: String) {
 }
 
 fun main() {
-    logger.debug { status }
-    if (configuration[TopLevel.dockerUser] != null) {
+    val dockerURI = System.getenv("DOCKER_HOST") ?: error { "DOCKER_HOST must be set" }
+    logger.info("Waiting for Docker...")
+    dockerURI.waitFor(2375, 32000L)
+    logger.info("Done")
+
+    if (configuration[TopLevel.dockerUser] != null && configuration[TopLevel.dockerUser] != "") {
         check(configuration[TopLevel.dockerPassword] != null) { "Docker password required" }
         dockerLogin(configuration[TopLevel.dockerUser]!!, configuration[TopLevel.dockerPassword]!!)
     }
+
+    logger.debug { status }
     embeddedServer(Netty, port = 8888, module = Application::playground).start(wait = true)
 }
 
@@ -131,4 +160,29 @@ fun resultFrom(response: String?): Result {
     return moshi.adapter(Result::class.java).fromJson(response) ?: error("failed to deserialize result")
 }
 
-fun Submission.toJson() = moshi.adapter(Submission::class.java).toJson(this)
+fun Submission.toJson(): String = moshi.adapter(Submission::class.java).toJson(this)
+
+@Suppress("NestedBlockDepth")
+fun String.waitFor(defaultPort: Int = -1, timeout: Long = 16000) {
+    val parts = this.split(":")
+    val (host, port) = if (parts.size == 2) {
+        Pair(parts[0], parts[1].toInt())
+    } else {
+        Pair(this, defaultPort)
+    }
+    val started = Instant.now().toEpochMilli()
+    while (Instant.now().toEpochMilli() - started < timeout) {
+        try {
+            Socket().use {
+                it.soTimeout = timeout.toInt()
+                it.connect(InetSocketAddress(host, port))
+                if (it.isConnected) {
+                    return@waitFor
+                }
+            }
+        } catch (e: IOException) {
+            Thread.sleep(TimeUnit.SECONDS.toMillis(1))
+        }
+    }
+    throw ConnectException("couldn't connect to $host:$port")
+}

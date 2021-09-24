@@ -1,11 +1,11 @@
 @file:Suppress("MagicNumber")
 
 import edu.illinois.cs.cs124.playground.Submission
-import edu.illinois.cs.cs125.questioner.server.playground
-import edu.illinois.cs.cs125.questioner.server.resultFrom
-import edu.illinois.cs.cs125.questioner.server.statusFrom
-import edu.illinois.cs.cs125.questioner.server.toJson
-import edu.illinois.cs.cs125.questioner.server.versionString
+import edu.illinois.cs.cs124.playground.server.playground
+import edu.illinois.cs.cs124.playground.server.resultFrom
+import edu.illinois.cs.cs124.playground.server.statusFrom
+import edu.illinois.cs.cs124.playground.server.toJson
+import edu.illinois.cs.cs124.playground.server.versionString
 import io.kotest.assertions.ktor.shouldHaveStatus
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
@@ -31,6 +31,13 @@ class TestMain : StringSpec() {
                 }
             }
         }
+        "should GET image" {
+            withTestApplication(Application::playground) {
+                handleRequest(HttpMethod.Get, "/image/cs124/helloworld").apply {
+                    response.shouldHaveStatus(HttpStatusCode.OK.value)
+                }
+            }
+        }
         "should POST helloworld submission" {
             val submission = Submission("cs124/helloworld").toJson()
             withTestApplication(Application::playground) {
@@ -48,7 +55,10 @@ class TestMain : StringSpec() {
         }
         "should POST python job" {
             val submission =
-                Submission("cs124/python", mapOf("main.py" to """print("Hello, Python!")""")).toJson()
+                Submission(
+                    "cs124/python",
+                    listOf(Submission.FakeFile("main.py", """print("Hello, Python!")"""))
+                ).toJson()
             withTestApplication(Application::playground) {
                 handleRequest(HttpMethod.Post, "/") {
                     addHeader("content-type", "application/json")

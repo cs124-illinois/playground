@@ -44,7 +44,10 @@ class StreamGobbler(
 }
 
 @JsonClass(generateAdapter = true)
-data class Submission(val image: String, val filesystem: Map<String, String> = mapOf(), val timeout: Int = 8000)
+data class Submission(val image: String, val filesystem: List<FakeFile> = listOf(), val timeout: Int = 4000) {
+    @JsonClass(generateAdapter = true)
+    data class FakeFile(val path: String, val contents: String)
+}
 
 @JsonClass(generateAdapter = true)
 data class Result(
@@ -57,20 +60,36 @@ data class Result(
     val output: String = outputLines.output()
 }
 
+private val loadedImages = mutableSetOf<String>()
+
+@Suppress("unused")
+suspend fun String.load(pullTimeout: Long = 10000L) = withContext(Dispatchers.IO) {
+    if (!loadedImages.contains(this@load)) {
+        ProcessBuilder(*listOf("/bin/sh", "-c", "docker pull ${this@load}").toTypedArray()).start()
+            .waitFor(pullTimeout, TimeUnit.MILLISECONDS).also {
+                check(it) { "Timed out pulling container" }
+                loadedImages += this@load
+            }
+    }
+}
+
 @Suppress("BlockingMethodInNonBlockingContext")
-suspend fun Submission.run(tempRoot: String? = null): Result = withContext(Dispatchers.IO) {
+suspend fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 10000L): Result = withContext(Dispatchers.IO) {
     val directory = if (tempRoot == null) {
         createTempDirectory("playground")
     } else {
         File(tempRoot).mkdirs()
         createTempDirectory(Path(tempRoot), "playground")
     }
-    filesystem.entries.forEach { (path, contents) ->
+    filesystem.forEach { (path, contents) ->
         directory.resolve(path).writeBytes(contents.toByteArray())
     }
     try {
+        image.load(pullTimeout)
+
         val dockerName = UUID.randomUUID().toString()
-        val command = "docker run --init --rm --network=none --name=$dockerName -v ${directory.absolutePathString()}:/playground $image"
+        val command =
+            "docker run --init --rm --network=none --name=$dockerName -v ${directory.absolutePathString()}:/playground $image"
 
         @Suppress("SpreadOperator")
         val processBuilder =

@@ -1,0 +1,72 @@
+{
+  "private": true,
+  "name": "proxy",
+  "version": "2021.9.0",
+  "scripts": {
+    "build": "rimraf dist && esbuild src/index.ts --sourcemap --bundle --platform=node --outfile=dist/index.js",
+    "clean": "rimraf dist",
+    "predocker:build": "yarn build",
+    "docker:build": "docker build --build-arg VERSION=$npm_package_version --build-arg GIT_COMMIT=$(git show --no-patch --format=%h) --build-arg BUILD_DATE=`date -u +\"%Y-%m-%dT%H:%M:%SZ\"` . -t cs124/playground-proxy:latest",
+    "postdocker:build": "yarn docker:tag",
+    "docker:push": "docker push cs124/playground-proxy:latest && docker push cs124/playground-proxy:$npm_package_version",
+    "docker:tag": "docker tag cs124/playground-proxy:latest cs124/playground-proxy:$npm_package_version",
+    "eslint": "eslint src/**",
+    "ncu": "ncu",
+    "start": "nodemon",
+    "prettier": "prettier -w --plugin=prettier-plugin-organize-imports . && prettier-package-json --write"
+  },
+  "dependencies": {
+    "@cs124/koa-google-login": "2021.7.1",
+    "@cs124/playground-types": "2021.9.0",
+    "@koa/cors": "^3.1.0",
+    "@koa/router": "^10.1.1",
+    "fetch-retry": "^5.0.1",
+    "http-terminator": "^3.0.3",
+    "koa": "^2.13.3",
+    "koa-body": "^4.2.0",
+    "koa-ratelimit": "^5.0.1",
+    "lodash": "^4.17.21",
+    "mongodb": "3.6.10",
+    "mongodb-client-encryption": "^1.2.7",
+    "mongodb-uri": "^0.9.7",
+    "node-fetch": "^3.0.0",
+    "runtypes": "6.4.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/assert": "^1.5.6",
+    "@types/koa": "^2.13.4",
+    "@types/koa-ratelimit": "^4.2.3",
+    "@types/koa__cors": "^3.0.3",
+    "@types/koa__router": "^8.0.8",
+    "@types/lodash": "^4.14.173",
+    "@types/mongodb": "3.6.10",
+    "@types/mongodb-uri": "^0.9.1",
+    "@types/node": "^16.9.6",
+    "@types/node-fetch": "^3.0.2",
+    "@types/uuid": "^8.3.1",
+    "@typescript-eslint/eslint-plugin": "^4.31.2",
+    "@typescript-eslint/parser": "^4.31.2",
+    "babel-eslint": "^10.1.0",
+    "env-cmd": "^10.1.0",
+    "esbuild": "^0.13.2",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "nodemon": "^2.0.13",
+    "npm-check-updates": "^11.8.5",
+    "prettier": "^2.4.1",
+    "prettier-package-json": "^2.6.0",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "package.json",
+      "src/index.ts",
+      ".env.development"
+    ],
+    "ext": "*.ts",
+    "exec": "env-cmd -f .env.development ts-node src/index.ts"
+  }
+}
