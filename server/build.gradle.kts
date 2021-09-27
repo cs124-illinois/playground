@@ -8,7 +8,7 @@ plugins {
     application
     id("org.jmailen.kotlinter")
     id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("com.palantir.docker") version "0.28.0"
+    id("com.palantir.docker") version "0.29.0"
 }
 dependencies {
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
