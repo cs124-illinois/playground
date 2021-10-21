@@ -7,8 +7,8 @@ plugins {
     kotlin("kapt")
     application
     id("org.jmailen.kotlinter")
-    id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("com.palantir.docker") version "0.29.0"
+    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("com.palantir.docker") version "0.30.0"
 }
 dependencies {
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
@@ -16,7 +16,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.31")
     implementation(project(":lib"))
 
-    implementation("io.ktor:ktor-server-netty:1.6.3")
+    implementation("io.ktor:ktor-server-netty:1.6.4")
     implementation("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
     implementation("com.github.cs125-illinois:ktor-moshi:1.0.3")
     implementation("org.slf4j:slf4j-api:1.7.32")
@@ -26,7 +26,7 @@ dependencies {
 
     testImplementation("io.kotest:kotest-runner-junit5:4.6.3")
     testImplementation("io.kotest:kotest-assertions-ktor:4.4.3")
-    testImplementation("io.ktor:ktor-server-test-host:1.6.3")
+    testImplementation("io.ktor:ktor-server-test-host:1.6.4")
 }
 task("createProperties") {
     doLast {
