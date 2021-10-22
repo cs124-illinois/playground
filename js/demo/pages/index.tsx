@@ -202,6 +202,8 @@ export default function Home() {
       <WithGoogleTokens>
         {({ idToken }) => (
           <PlaygroundProvider googleToken={idToken} server={process.env.NEXT_PUBLIC_PLAYGROUND_SERVER as string}>
+            <h1><kbd>playground</kbd></h1>
+            <p>Visit the <a href="https://github.com/cs124-illinois/playground">project homepage</a></p>
             <h2>Playground Demo</h2>
             <div style={{ marginBottom: 8 }}>
               <LoginButton />
