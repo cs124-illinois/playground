@@ -7,7 +7,7 @@ import { IAceEditor } from "react-ace/lib/types"
 
 const AceEditor = dynamic(() => import("react-ace"), { ssr: false })
 
-type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r"
+type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r" | "c"
 
 const DEFAULT_CODES = {
   python: `print("Hello, Python!")`,
@@ -28,7 +28,13 @@ const DEFAULT_CODES = {
   }
   `.trim(),
   julia: `print("Hello, Julia!")`,
-  r: `cat("Hello, R!")`
+  r: `cat("Hello, R!")`,
+  c: `
+  #include <stdio.h>
+  int main () {
+      printf("Hello, C!\\n");
+      return 0;
+  }`.trim()
 }
 
 const DEFAULT_FILES = {
@@ -37,7 +43,8 @@ const DEFAULT_FILES = {
   haskell: "main.hs",
   java: "Main.java",
   julia: "main.jl",
-  r: "main.R"
+  r: "main.R",
+  c: "main.c"
 }
 
 const LoginButton: React.FC = () => {

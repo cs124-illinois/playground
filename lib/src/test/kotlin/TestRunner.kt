@@ -109,4 +109,24 @@ class TestRunner : StringSpec({
             output shouldBe "Hello, R!"
         }
     }
+    "it should run a C container" {
+        Submission(
+            "cs124/playground-c",
+            listOf(
+                Submission.FakeFile(
+                    "main.c",
+                    """
+                    |#include <stdio.h>
+                    |int main () {
+                    |   printf("Hello, C!\\n");
+                    |   return 0;
+                    |}
+                    """.trimMargin()
+                )
+            )
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, C!"
+        }
+    }
 })
