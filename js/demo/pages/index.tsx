@@ -7,7 +7,7 @@ import { IAceEditor } from "react-ace/lib/types"
 
 const AceEditor = dynamic(() => import("react-ace"), { ssr: false })
 
-type language = "python" | "cpp" | "haskell" | "java" | "julia"
+type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r"
 
 const DEFAULT_CODES = {
   python: `print("Hello, Python!")`,
@@ -27,16 +27,18 @@ const DEFAULT_CODES = {
     }
   }
   `.trim(),
-  julia: `print("Hello, Julia!")`
-} as Record<language, string>
+  julia: `print("Hello, Julia!")`,
+  r: `cat("Hello, R!")`
+}
 
 const DEFAULT_FILES = {
   python: "main.py",
   cpp: "main.cpp",
   haskell: "main.hs",
   java: "Main.java",
-  julia: "main.jl"
-} as Record<language, string>
+  julia: "main.jl",
+  r: "main.R"
+}
 
 const LoginButton: React.FC = () => {
   const { isSignedIn, auth, ready } = useGoogleLogin()
@@ -167,6 +169,7 @@ const PlaygroundDemo: React.FC = () => {
             <option value="java">Java</option>
             <option value="haskell">Haskell</option>
             <option value="julia">Julia</option>
+            <option value="r">R</option>
           </select>
         </div>
       </div>

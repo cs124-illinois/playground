@@ -18,7 +18,10 @@ class TestRunner : StringSpec({
         }
     }
     "it should run a Python container" {
-        Submission("cs124/playground-python", listOf(Submission.FakeFile("main.py", """print("Hello, Python!")"""))).run().apply {
+        Submission(
+            "cs124/playground-python",
+            listOf(Submission.FakeFile("main.py", """print("Hello, Python!")"""))
+        ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Python!"
         }
@@ -90,6 +93,20 @@ class TestRunner : StringSpec({
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Julia!"
+        }
+    }
+    "it should run a R container" {
+        Submission(
+            "cs124/playground-r",
+            listOf(
+                Submission.FakeFile(
+                    "main.R",
+                    """cat("Hello, R!")"""
+                )
+            )
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, R!"
         }
     }
 })
