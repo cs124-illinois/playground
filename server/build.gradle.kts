@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 import java.io.File
 import java.io.StringWriter
 import java.util.Properties

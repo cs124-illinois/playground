@@ -17,9 +17,10 @@ services:
       - dind
     environment:
       - "DOCKER_HOST=dind:2375"
+      - "DOCKER_USER=${DOCKERUSER}"
+      - "DOCKER_PASSWORD=${DOCKERPASSWORD}"
       - "DIRECTORY=/grading/"
-      - "DOCKERUSER=${DOCKERUSER}"
-      - "DOCKERPASSWORD=${DOCKERPASSWORD}"
+      - "IMAGES=cs124/playground-python,cs124/playground-cpp,cs124/playground-java,cs124/playground-haskell"
     volumes:
       - "./grading/:/grading/"
   mongodb:

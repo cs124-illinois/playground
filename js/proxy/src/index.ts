@@ -54,14 +54,6 @@ const getStatus = async (retries = 0) => {
 router.get("/", async (ctx: Context) => {
   ctx.body = await getStatus()
 })
-router.get("/image/(.*)", async (ctx: Context) => {
-  try {
-    await fetch(`${BACKEND}${ctx.request.path}`)
-    ctx.body = {}
-  } catch (err) {
-    ctx.throw(400)
-  }
-})
 router.post("/", async (ctx) => {
   const start = new Date()
   const collection = await _collection

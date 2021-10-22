@@ -31,13 +31,6 @@ class TestMain : StringSpec() {
                 }
             }
         }
-        "should GET image" {
-            withTestApplication(Application::playground) {
-                handleRequest(HttpMethod.Get, "/image/cs124/helloworld").apply {
-                    response.shouldHaveStatus(HttpStatusCode.OK.value)
-                }
-            }
-        }
         "should POST helloworld submission" {
             val submission = Submission("cs124/helloworld").toJson()
             withTestApplication(Application::playground) {
@@ -56,7 +49,7 @@ class TestMain : StringSpec() {
         "should POST python job" {
             val submission =
                 Submission(
-                    "cs124/python",
+                    "cs124/playground-python",
                     listOf(Submission.FakeFile("main.py", """print("Hello, Python!")"""))
                 ).toJson()
             withTestApplication(Application::playground) {

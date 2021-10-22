@@ -23,7 +23,9 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.io.IOException
@@ -37,13 +39,20 @@ import java.util.concurrent.TimeUnit
 private val serverStarted = Instant.now()
 private val logger = KotlinLogging.logger {}
 
+object DockerSpec : ConfigSpec() {
+    val host by required<String>()
+    val user by optional<String?>(null)
+    val password by optional<String?>(null)
+}
 object TopLevel : ConfigSpec("") {
     val directory by optional<String?>(null)
-    val dockerUser by optional<String?>(null)
-    val dockerPassword by optional<String?>(null)
+    val images by optional<String?>(null)
 }
 
-val configuration = Config { addSpec(TopLevel) }.from.env()
+val configuration = Config {
+    addSpec(TopLevel)
+    addSpec(DockerSpec)
+}.from.env()
 
 class InstantAdapter {
     @FromJson
@@ -87,18 +96,6 @@ fun Application.playground() {
         get("/") {
             call.respond(status)
         }
-        get("/image/{image...}") {
-            call.parameters.getAll("image")?.joinToString("/")?.also { image ->
-                try {
-                    image.load()
-                    logger.debug { "Loaded $image" }
-                    call.respond(HttpStatusCode.OK)
-                } catch (e: Exception) {
-                    logger.error { e }
-                    call.respond(HttpStatusCode.BadRequest)
-                }
-            } ?: call.respond(HttpStatusCode.BadRequest)
-        }
         post("/") {
             withContext(Dispatchers.IO) {
                 try {
@@ -135,17 +132,23 @@ fun dockerLogin(user: String, password: String) {
     logger.info("Done")
 }
 
+private val backgroundScope = CoroutineScope(Dispatchers.IO)
+
 fun main() {
-    val dockerURI = System.getenv("DOCKER_HOST") ?: error { "DOCKER_HOST must be set" }
     logger.info("Waiting for Docker...")
-    dockerURI.waitFor(2375, 32000L)
+    configuration[DockerSpec.host].waitFor(2375, 32000L)
     logger.info("Done")
 
-    if (configuration[TopLevel.dockerUser] != null && configuration[TopLevel.dockerUser] != "") {
-        check(configuration[TopLevel.dockerPassword] != null) { "Docker password required" }
-        dockerLogin(configuration[TopLevel.dockerUser]!!, configuration[TopLevel.dockerPassword]!!)
+    if (configuration[DockerSpec.user] != null && configuration[DockerSpec.user] != "") {
+        check(configuration[DockerSpec.password] != null) { "Docker password required" }
+        dockerLogin(configuration[DockerSpec.user]!!, configuration[DockerSpec.password]!!)
     }
-
+    backgroundScope.launch {
+        configuration[TopLevel.images]?.split(",")?.forEach { image ->
+            image.load()
+            logger.debug { "Loaded $image" }
+        }
+    }
     logger.debug { status }
     embeddedServer(Netty, port = 8888, module = Application::playground).start(wait = true)
 }

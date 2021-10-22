@@ -6,7 +6,6 @@ export interface PlaygroundContext {
   connected: boolean
   status: Status | undefined
   run: (submission: Submission, validate?: boolean) => Promise<Result>
-  load: (image: string) => Promise<void>
 }
 
 interface PlaygroundProviderProps {
@@ -53,15 +52,8 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({ googleTo
     [googleToken, server]
   )
 
-  const load = useCallback(
-    async (image: string): Promise<void> => {
-      await fetch(`${server}/image/${image}`)
-    },
-    [server]
-  )
-
   return (
-    <PlaygroundContext.Provider value={{ available: true, status, connected: status !== undefined, run, load }}>
+    <PlaygroundContext.Provider value={{ available: true, status, connected: status !== undefined, run }}>
       {children}
     </PlaygroundContext.Provider>
   )
@@ -76,9 +68,6 @@ export const PlaygroundContext = React.createContext<PlaygroundContext>({
   connected: false,
   status: undefined,
   run: () => {
-    throw new Error("Playground context not available")
-  },
-  load: () => {
     throw new Error("Playground context not available")
   },
 })

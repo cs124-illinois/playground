@@ -39,22 +39,9 @@ const PlaygroundDemo: React.FC = () => {
   const [value, setValue] = useState("")
   const [mode, setMode] = useState<string>("python")
   const [result, setResult] = useState<{ result?: Result; error?: string } | undefined>()
-  const { run: runPlayground, load } = usePlayground()
+  const { run: runPlayground } = usePlayground()
   const aceRef = useRef<IAceEditor>()
   const [running, setRunning] = useState(false)
-
-  useEffect(() => {
-    load("cs124/playground-python")
-      .then(() => {
-        load("cs124/playground-cpp")
-      })
-      .then(() => {
-        load("cs124/playground-haskell")
-      })
-      .then(() => {
-        load("cs124/playground-java")
-      })
-  }, [load])
 
   const run = useCallback(async () => {
     if (!aceRef.current) {
