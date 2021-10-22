@@ -7,23 +7,36 @@ import { IAceEditor } from "react-ace/lib/types"
 
 const AceEditor = dynamic(() => import("react-ace"), { ssr: false })
 
-const DEFAULT_PYTHON_CODE = `print("Hello, Python!")`
-const DEFAULT_CPP_CODE = `
-#include <iostream>
-int main() {
-    std::cout << "Hello, CPP!\\n";
-    return 0;
-}`.trim()
-const DEFAULT_HASKELL_CODE = `
-main = putStrLn "Hello, Haskell!"
-`.trim()
-const DEFAULT_JAVA_CODE = `
-public class Main {
-  public static void main(String[] unused) {
-    System.out.println("Hello, Java!");
+type language = "python" | "cpp" | "haskell" | "java" | "julia"
+
+const DEFAULT_CODES = {
+  python: `print("Hello, Python!")`,
+  cpp: `
+  #include <iostream>
+  int main() {
+      std::cout << "Hello, CPP!\\n";
+      return 0;
+  }`.trim(),
+  haskell: `
+  main = putStrLn "Hello, Haskell!"
+  `.trim(),
+  java: `
+  public class Main {
+    public static void main(String[] unused) {
+      System.out.println("Hello, Java!");
+    }
   }
-}
-`.trim()
+  `.trim(),
+  julia: `print("Hello, Julia!")`
+} as Record<language, string>
+
+const DEFAULT_FILES = {
+  python: "main.py",
+  cpp: "main.cpp",
+  haskell: "main.hs",
+  java: "Main.java",
+  julia: "main.jl"
+} as Record<language, string>
 
 const LoginButton: React.FC = () => {
   const { isSignedIn, auth, ready } = useGoogleLogin()
@@ -37,7 +50,7 @@ const LoginButton: React.FC = () => {
 
 const PlaygroundDemo: React.FC = () => {
   const [value, setValue] = useState("")
-  const [mode, setMode] = useState<string>("python")
+  const [mode, setMode] = useState<language>("python")
   const [result, setResult] = useState<{ result?: Result; error?: string } | undefined>()
   const { run: runPlayground } = usePlayground()
   const aceRef = useRef<IAceEditor>()
@@ -53,16 +66,7 @@ const PlaygroundDemo: React.FC = () => {
       return
     }
 
-    let path = "main.py"
-    if (mode === "python") {
-      path = "main.py"
-    } else if (mode === "cpp") {
-      path = "main.cpp"
-    } else if (mode === "haskell") {
-      path = "main.hs"
-    } else if (mode === "java") {
-      path = "Main.java"
-    }
+    let path = DEFAULT_FILES[mode]
 
     const submission: Submission = {
       image: `cs124/playground-${mode}`,
@@ -122,15 +126,7 @@ const PlaygroundDemo: React.FC = () => {
   }, [commands])
 
   useEffect(() => {
-    if (mode === "python") {
-      setValue(DEFAULT_PYTHON_CODE)
-    } else if (mode === "cpp") {
-      setValue(DEFAULT_CPP_CODE)
-    } else if (mode === "haskell") {
-      setValue(DEFAULT_HASKELL_CODE)
-    } else if (mode === "java") {
-      setValue(DEFAULT_JAVA_CODE)
-    }
+    setValue(DEFAULT_CODES[mode] ?? "")
     setResult(undefined)
   }, [mode])
 
@@ -165,11 +161,12 @@ const PlaygroundDemo: React.FC = () => {
           Run
         </button>
         <div style={{ float: "right" }}>
-          <select id="language" onChange={(e) => setMode(e.target.value)} value={mode}>
+          <select id="language" onChange={(e) => setMode(e.target.value as language)} value={mode}>
             <option value="python">Python</option>
             <option value="cpp">C++</option>
             <option value="java">Java</option>
             <option value="haskell">Haskell</option>
+            <option value="julia">Julia</option>
           </select>
         </div>
       </div>

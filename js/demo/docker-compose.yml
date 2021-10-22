@@ -20,7 +20,7 @@ services:
       - "DOCKER_USER=${DOCKERUSER}"
       - "DOCKER_PASSWORD=${DOCKERPASSWORD}"
       - "DIRECTORY=/grading/"
-      - "IMAGES=cs124/playground-python,cs124/playground-cpp,cs124/playground-java,cs124/playground-haskell"
+      - "IMAGES=cs124/playground-python,cs124/playground-cpp,cs124/playground-java,cs124/playground-haskell,cs124/playground-julia"
     volumes:
       - "./grading/:/grading/"
   mongodb:

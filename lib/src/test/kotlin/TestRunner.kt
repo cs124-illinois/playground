@@ -78,4 +78,18 @@ class TestRunner : StringSpec({
             timedOut shouldBe true
         }
     }
+    "it should run a Julia container" {
+        Submission(
+            "cs124/playground-julia",
+            listOf(
+                Submission.FakeFile(
+                    "main.jl",
+                    """print("Hello, Julia!")"""
+                )
+            )
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Julia!"
+        }
+    }
 })
