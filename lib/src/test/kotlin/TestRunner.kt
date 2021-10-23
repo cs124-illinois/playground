@@ -109,4 +109,23 @@ class TestRunner : StringSpec({
             output shouldBe "Hello, R!"
         }
     }
+    "it should run a Go container" {
+        Submission(
+            "cs124/playground-go",
+            listOf(
+                Submission.FakeFile(
+                    "main.go",
+                    """
+            |package main
+            |import "fmt"
+            |func main() {
+            |   fmt.Println("Hello, Go!")
+            |}""".trimMargin()
+                )
+            )
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Go!"
+        }
+    }
 })
