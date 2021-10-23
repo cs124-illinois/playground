@@ -35,7 +35,7 @@ const DEFAULT_CODES = {
   func main() {
     fmt.Println("Hello, Go!")
   }
-  `
+  `.trim()
 }
 
 const DEFAULT_FILES = {
