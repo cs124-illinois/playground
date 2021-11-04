@@ -58,6 +58,7 @@ router.post("/", async (ctx) => {
   const start = new Date()
   const collection = await _collection
   const request = Submission.check(ctx.request.body)
+  request.timeout = 8000
   let response: Response
   try {
     response = await fetch(BACKEND, {

@@ -28,7 +28,20 @@ const DEFAULT_CODES = {
   }
   `.trim(),
   julia: `print("Hello, Julia!")`,
-  r: `cat("Hello, R!")`
+  r: `cat("Hello, R!")`,
+  c: `#include <stdio.h>
+int main () {
+  printf("Hello, C!\\n");
+  return 0;
+}
+`,
+  go: `
+package main
+import "fmt"
+func main() {
+  fmt.Println("Hello, Go!")
+}
+`.trim(),
 }
 
 const DEFAULT_FILES = {
@@ -37,7 +50,9 @@ const DEFAULT_FILES = {
   haskell: "main.hs",
   java: "Main.java",
   julia: "main.jl",
-  r: "main.R"
+  r: "main.R",
+  c: "main.c",
+  go: "main.go",
 }
 
 const LoginButton: React.FC = () => {
@@ -71,8 +86,9 @@ const PlaygroundDemo: React.FC = () => {
     let path = DEFAULT_FILES[mode]
 
     const submission: Submission = {
-      image: `cs124/playground-${mode}`,
+      image: `cs124/playground-runner-${mode}`,
       filesystem: [{ path, contents: content }],
+      timeout: 8000
     }
     try {
       setRunning(true)
@@ -170,6 +186,8 @@ const PlaygroundDemo: React.FC = () => {
             <option value="haskell">Haskell</option>
             <option value="julia">Julia</option>
             <option value="r">R</option>
+            <option value="c">C</option>
+            <option value="go">Go</option>
           </select>
         </div>
       </div>
@@ -189,8 +207,12 @@ export default function Home() {
       <WithGoogleTokens>
         {({ idToken }) => (
           <PlaygroundProvider googleToken={idToken} server={process.env.NEXT_PUBLIC_PLAYGROUND_SERVER as string}>
-            <h1><kbd>playground</kbd></h1>
-            <p>Visit the <a href="https://github.com/cs124-illinois/playground">project homepage</a></p>
+            <h1>
+              <kbd>playground</kbd>
+            </h1>
+            <p>
+              Visit the <a href="https://github.com/cs124-illinois/playground">project homepage</a>
+            </p>
             <h2>Playground Demo</h2>
             <div style={{ marginBottom: 8 }}>
               <LoginButton />

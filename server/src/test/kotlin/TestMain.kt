@@ -1,6 +1,7 @@
 @file:Suppress("MagicNumber")
 
 import edu.illinois.cs.cs124.playground.Submission
+import edu.illinois.cs.cs124.playground.server.listPlaygroundImages
 import edu.illinois.cs.cs124.playground.server.playground
 import edu.illinois.cs.cs124.playground.server.resultFrom
 import edu.illinois.cs.cs124.playground.server.statusFrom
@@ -31,26 +32,12 @@ class TestMain : StringSpec() {
                 }
             }
         }
-        "should POST helloworld submission" {
-            val submission = Submission("cs124/helloworld").toJson()
-            withTestApplication(Application::playground) {
-                handleRequest(HttpMethod.Post, "/") {
-                    addHeader("content-type", "application/json")
-                    setBody(submission)
-                }.apply {
-                    response.shouldHaveStatus(HttpStatusCode.OK.value)
-                    resultFrom(response.content).apply {
-                        timedOut shouldBe false
-                        output shouldBe "Hello, world!"
-                    }
-                }
-            }
-        }
         "should POST python job" {
             val submission =
                 Submission(
-                    "cs124/playground-python",
-                    listOf(Submission.FakeFile("main.py", """print("Hello, Python!")"""))
+                    "cs124/playground-runner-python",
+                    listOf(Submission.FakeFile("main.py", """print("Hello, Python!")""")),
+                    4000L
                 ).toJson()
             withTestApplication(Application::playground) {
                 handleRequest(HttpMethod.Post, "/") {
@@ -63,6 +50,13 @@ class TestMain : StringSpec() {
                         output shouldBe "Hello, Python!"
                     }
                 }
+            }
+        }
+        "test list containers" {
+            val username = System.getenv("DOCKER_USER")
+            val password = System.getenv("DOCKER_PASSWORD")
+            if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
+               listPlaygroundImages(username, password)
             }
         }
     }

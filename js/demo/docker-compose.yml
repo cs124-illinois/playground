@@ -16,11 +16,11 @@ services:
     depends_on:
       - dind
     environment:
+      - "PLAYGROUND_LOG_LEVEL:TRACE"
       - "DOCKER_HOST=dind:2375"
-      - "DOCKER_USER=${DOCKERUSER}"
-      - "DOCKER_PASSWORD=${DOCKERPASSWORD}"
+      - "DOCKER_USER=${DOCKER_USER}"
+      - "DOCKER_PASSWORD=${DOCKER_PASSWORD}"
       - "DIRECTORY=/grading/"
-      - "IMAGES=cs124/playground-python,cs124/playground-cpp,cs124/playground-java,cs124/playground-haskell,cs124/playground-julia"
     volumes:
       - "./grading/:/grading/"
   mongodb:
@@ -32,14 +32,10 @@ services:
   dind:
     image: "docker:19.03-dind"
     entrypoint:
-      /bin/sh -c "rm -f /var/run/docker.pid && rm -f /var/run/docker/containerd/containerd.pid && dockerd
-      --host=tcp://0.0.0.0:2375"
+      /bin/sh -c "rm -f /var/run/docker.pid && rm -f /var/run/docker/containerd/containerd.pid && dockerd --host=tcp://0.0.0.0:2375"
     privileged: true
     volumes:
-      - "dind_data:/var/lib/docker"
       - "./grading/:/grading/"
 volumes:
   mongodb_data:
-    driver: local
-  dind_data:
     driver: local

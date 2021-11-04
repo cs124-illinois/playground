@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "backend": "yarn backend:up && yarn backend:down",
-    "backend:down": "docker compose --env-file .env.development down",
+    "backend:down": "docker compose --env-file .env.development down --volumes",
     "backend:up": "docker compose --env-file .env.development up",
     "build": "next build",
     "deploy": "gh-pages -t -d dist",
@@ -17,22 +17,22 @@
   },
   "dependencies": {
     "@cs124/playground-react": "2021.9.0",
-    "@cs124/react-google-login": "^2021.7.0",
-    "next": "11.1.2",
+    "@cs124/react-google-login": "^2021.11.0",
+    "next": "12.0.2",
     "react": "17.0.2",
-    "react-ace": "9.4.4",
+    "react-ace": "9.5.0",
     "react-dom": "17.0.2",
-    "runtypes": "6.4.1"
+    "runtypes": "6.5.0"
   },
   "devDependencies": {
-    "@types/react": "17.0.31",
-    "eslint": "8.0.1",
-    "eslint-config-next": "11.1.2",
+    "@types/react": "17.0.34",
+    "eslint": "8.1.0",
+    "eslint-config-next": "12.0.2",
     "gh-pages": "^3.2.3",
     "prettier": "2.4.1",
     "prettier-package-json": "2.6.0",
     "prettier-plugin-organize-imports": "2.3.4",
-    "sass": "1.43.3",
+    "sass": "1.43.4",
     "typescript": "4.4.4"
   }
 }

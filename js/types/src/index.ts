@@ -18,20 +18,32 @@ export type FakeFile = Static<typeof FakeFile>
 
 export const Submission = Record({
   image: String,
+  timeout: Number,
 }).And(
   Partial({
     filesystem: Array(FakeFile),
-    timeout: Number,
   })
 )
 export type Submission = Static<typeof Submission>
 
-export const Result = Record({
+export const Timings = Record({
   started: String.withConstraint((s) => !isNaN(Date.parse(s))),
-  ended: String.withConstraint((s) => !isNaN(Date.parse(s))),
+  tempCreated: String.withConstraint((s) => !isNaN(Date.parse(s))),
+  imagePulled: String.withConstraint((s) => !isNaN(Date.parse(s))),
+  containerStarted: String.withConstraint((s) => !isNaN(Date.parse(s))),
+}).And(
+  Partial({
+    completed: String.withConstraint((s) => !isNaN(Date.parse(s))),
+  })
+)
+export type Timings = Static<typeof Timings>
+
+export const Result = Record({
   outputLines: Array(OutputLine),
+  timeout: Number,
   timedOut: Boolean,
   exitValue: Number,
+  timings: Timings,
 })
 export type Result = Static<typeof Result>
 

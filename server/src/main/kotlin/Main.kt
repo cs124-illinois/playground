@@ -1,5 +1,8 @@
 package edu.illinois.cs.cs124.playground.server
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ryanharter.ktor.moshi.moshi
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonClass
@@ -14,6 +17,13 @@ import edu.illinois.cs.cs124.playground.run
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.client.HttpClient
+import io.ktor.client.call.receive
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.request
+import io.ktor.client.statement.HttpResponse
 import io.ktor.features.ContentNegotiation
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
@@ -44,9 +54,10 @@ object DockerSpec : ConfigSpec() {
     val user by optional<String?>(null)
     val password by optional<String?>(null)
 }
+
 object TopLevel : ConfigSpec("") {
     val directory by optional<String?>(null)
-    val images by optional<String?>(null)
+    val preload by optional(true)
 }
 
 val configuration = Config {
@@ -111,14 +122,14 @@ fun Application.playground() {
     }
 }
 
-fun dockerLogin(user: String, password: String) {
-    logger.info("Logging in to Docker as $user...")
+fun dockerLogin(username: String, password: String) {
+    logger.info("Logging in to Docker as $username...")
     @Suppress("SpreadOperator")
     ProcessBuilder(
         *listOf(
             "/bin/sh",
             "-c",
-            "docker login --username $user --password-stdin"
+            "docker login --username $username --password-stdin"
         ).toTypedArray()
     ).start().also { process ->
         process.outputStream.also {
@@ -132,6 +143,32 @@ fun dockerLogin(user: String, password: String) {
     logger.info("Done")
 }
 
+private data class LoginRequest(val username: String, val password: String)
+private data class TokenResponse(val token: String)
+data class ListResponse(val count: Int, val results: List<Result>) {
+    data class Result(val name: String)
+}
+
+suspend fun listPlaygroundImages(username: String, password: String): ListResponse {
+    val mapper = jacksonObjectMapper().apply {
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    }
+    val httpClient = HttpClient(CIO)
+
+    val token = httpClient.post<HttpResponse>("https://hub.docker.com/v2/users/login/") {
+        header("Content-Type", "application/json")
+        body = mapper.writeValueAsString(LoginRequest(username, password))
+    }.let { response ->
+        mapper.readValue<TokenResponse>(response.receive<String>()).token
+    }
+
+    return httpClient.request<String>("https://hub.docker.com/v2/repositories/cs124") {
+        header("Authorization", "JWT $token")
+    }.let { response ->
+        mapper.readValue(response)
+    }
+}
+
 private val backgroundScope = CoroutineScope(Dispatchers.IO)
 
 fun main() {
@@ -141,14 +178,23 @@ fun main() {
 
     if (configuration[DockerSpec.user] != null && configuration[DockerSpec.user] != "") {
         check(configuration[DockerSpec.password] != null) { "Docker password required" }
-        dockerLogin(configuration[DockerSpec.user]!!, configuration[DockerSpec.password]!!)
-    }
-    backgroundScope.launch {
-        configuration[TopLevel.images]?.split(",")?.forEach { image ->
-            image.load()
-            logger.debug { "Loaded $image" }
+        val username = configuration[DockerSpec.user]!!
+        val password = configuration[DockerSpec.password]!!
+
+        dockerLogin(username, password)
+
+        if (configuration[TopLevel.preload]) {
+            backgroundScope.launch {
+                listPlaygroundImages(username, password).results.forEach { result ->
+                    if (result.name.startsWith("playground-runner-")) {
+                        "cs124/${result.name}".load()
+                        logger.debug { "Loaded cs124/${result.name}" }
+                    }
+                }
+            }
         }
     }
+
     logger.debug { status }
     embeddedServer(Netty, port = 8888, module = Application::playground).start(wait = true)
 }
