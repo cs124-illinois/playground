@@ -60,7 +60,7 @@ fun String.load(pullTimeout: Long = 60000L, echo: Boolean = false): Unit = Corou
         logger.trace { "Skipping load: Already loaded ${this@load}" }
         return@load
     }
-    logger.debug { "Loading image ${this@load}"}
+    logger.debug { "Loading image ${this@load}" }
     ProcessBuilder(*listOf("/bin/sh", "-c", "docker pull ${this@load}").toTypedArray())
         .also {
             if (echo) {
@@ -86,16 +86,16 @@ fun String.inspect(): Boolean = CoroutineScope(Dispatchers.IO).run {
         logger.trace { "Skipping inspect: Already loaded ${this@inspect}" }
         return true
     }
-    logger.debug { "Inspecting image ${this@inspect}"}
+    logger.debug { "Inspecting image ${this@inspect}" }
     return ProcessBuilder(*listOf("/bin/sh", "-c", "docker inspect ${this@inspect} > /dev/null").toTypedArray())
         .start().let { process ->
             process.waitFor(1000, TimeUnit.MILLISECONDS).also {
                 check(it) {
-                    logger.warn { "Inspecting image ${this@inspect} failed: ${process.exitValue()}"}
+                    logger.warn { "Inspecting image ${this@inspect} failed: ${process.exitValue()}" }
                     "Timed out inspecting container: ${this@inspect}"
                 }
             }
-            logger.debug { "Inspecting image ${this@inspect} succeeded: ${process.exitValue() == 0}"}
+            logger.debug { "Inspecting image ${this@inspect} succeeded: ${process.exitValue() == 0}" }
             process.exitValue() == 0
         }
 }
@@ -136,9 +136,9 @@ fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L): Result
         val tempCreated = Instant.now()
         try {
             if (!image.inspect()) {
-                logger.debug { "Run requires loading $image"}
+                logger.debug { "Run requires loading $image" }
                 image.load(pullTimeout)
-                logger.debug { "Completed image pull"}
+                logger.debug { "Completed image pull" }
             }
             val imagePulled = Instant.now()
 

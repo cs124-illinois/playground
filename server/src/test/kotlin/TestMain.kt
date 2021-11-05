@@ -9,6 +9,7 @@ import edu.illinois.cs.cs124.playground.server.toJson
 import edu.illinois.cs.cs124.playground.server.versionString
 import io.kotest.assertions.ktor.shouldHaveStatus
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.ktor.application.Application
 import io.ktor.http.HttpMethod
@@ -56,7 +57,7 @@ class TestMain : StringSpec() {
             val username = System.getenv("DOCKER_USER")
             val password = System.getenv("DOCKER_PASSWORD")
             if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
-               listPlaygroundImages(username, password)
+                listPlaygroundImages(username, password).results.filter { it.name.startsWith("playground-runner-") } shouldHaveSize 8
             }
         }
     }

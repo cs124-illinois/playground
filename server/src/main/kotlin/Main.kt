@@ -162,7 +162,7 @@ suspend fun listPlaygroundImages(username: String, password: String): ListRespon
         mapper.readValue<TokenResponse>(response.receive<String>()).token
     }
 
-    return httpClient.request<String>("https://hub.docker.com/v2/repositories/cs124") {
+    return httpClient.request<String>("https://hub.docker.com/v2/repositories/cs124?page_size=100") {
         header("Authorization", "JWT $token")
     }.let { response ->
         mapper.readValue(response)
