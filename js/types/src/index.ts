@@ -33,6 +33,7 @@ export const Timings = Record({
   containerStarted: String.withConstraint((s) => !isNaN(Date.parse(s))),
 }).And(
   Partial({
+    executionStarted: String.withConstraint((s) => !isNaN(Date.parse(s))),
     completed: String.withConstraint((s) => !isNaN(Date.parse(s))),
   })
 )
