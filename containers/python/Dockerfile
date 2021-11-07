@@ -1,3 +1,4 @@
 FROM python:alpine
+COPY run.sh what.sh /
 WORKDIR /playground
-CMD ["python", "main.py"]
+CMD ["/run.sh"]

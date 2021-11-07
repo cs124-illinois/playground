@@ -6,17 +6,6 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 class TestRunner : StringSpec({
-    "it should run a helloworld container" {
-        Submission("cs124/playground-test-helloworld", timeout = 1000L).run().apply {
-            timedOut shouldBe false
-            output shouldBe "Hello, world!"
-        }
-    }
-    "it should stop a spinning container" {
-        Submission("cs124/playground-test-spinner", timeout = 1000L).run().apply {
-            timedOut shouldBe true
-        }
-    }
     "it should run a Python container" {
         Submission(
             "cs124/playground-runner-python",
@@ -25,6 +14,18 @@ class TestRunner : StringSpec({
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Python!"
+        }
+    }
+    "it should stop a spinning container" {
+        Submission(
+            "cs124/playground-runner-python",
+            listOf(Submission.FakeFile("main.py", """
+                |while True:
+                |  print("Hello, Python!")
+            """.trimMargin())),
+            1000L
+        ).run().apply {
+            timedOut shouldBe true
         }
     }
     "it should run a CPP container" {
@@ -118,6 +119,25 @@ class TestRunner : StringSpec({
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Go!"
+        }
+    }
+    "it should run a Rust container" {
+        Submission(
+            "cs124/playground-runner-rust",
+            listOf(
+                Submission.FakeFile(
+                    "main.rs",
+                    """
+                    |fn main() {
+                    |  println!("Hello, Rust!");
+                    |}
+                    """.trimMargin()
+                )
+            ),
+            timeout = 4000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Rust!"
         }
     }
 })

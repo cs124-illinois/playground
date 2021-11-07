@@ -35,10 +35,17 @@ class StreamGobbler(
     private val console: OutputLine.Console,
     private val inputStream: InputStream,
 ) : Runnable {
+    var started: Instant? = null
     val outputLines: MutableList<OutputLine> = mutableListOf()
     override fun run() {
         BufferedReader(InputStreamReader(inputStream)).lines().forEach { line ->
             if (line == null) {
+                return@forEach
+            }
+            if (outputLines.isEmpty()) {
+                started = Instant.now()
+            }
+            if (outputLines.isEmpty() && line.trim() == "...starting...") {
                 return@forEach
             }
             outputLines.add(OutputLine(console, Instant.now(), line))
@@ -116,6 +123,7 @@ data class Result(
         val tempCreated: Instant,
         val imagePulled: Instant,
         val containerStarted: Instant,
+        val executionStarted: Instant?,
         val completed: Instant?
     )
 }
@@ -176,12 +184,15 @@ fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L): Result
             stderrThread.join()
             stdoutThread.join()
 
+            val executionStarted = stdoutLines.started
+            check(timedOut || executionStarted != null) { "Didn't record execution start timestamp" }
+
             return@runCatching Result(
                 (stdoutLines.outputLines + stderrLines.outputLines).sortedBy { it.timestamp },
                 timeout,
                 timedOut,
                 exitValue,
-                Result.Timings(started, tempCreated, imagePulled, containerStarted, completed)
+                Result.Timings(started, tempCreated, imagePulled, containerStarted, executionStarted, completed)
             )
         } catch (e: Exception) {
             e.printStackTrace()
