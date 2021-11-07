@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "proxy",
-  "version": "2021.11.0",
+  "version": "2021.11.1",
   "scripts": {
     "build": "rimraf dist && esbuild src/index.ts --sourcemap --bundle --platform=node --outfile=dist/index.js",
     "clean": "rimraf dist",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@cs124/koa-google-login": "2021.11.0",
-    "@cs124/playground-types": "2021.11.0",
+    "@cs124/playground-types": "2021.11.1",
     "@koa/cors": "^3.1.0",
     "@koa/router": "^10.1.1",
     "fetch-retry": "^5.0.1",
@@ -51,7 +51,7 @@
     "babel-eslint": "^10.1.0",
     "env-cmd": "^10.1.0",
     "esbuild": "^0.13.12",
-    "eslint": "^8.1.0",
+    "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "nodemon": "^2.0.14",

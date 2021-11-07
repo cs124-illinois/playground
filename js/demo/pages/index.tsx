@@ -7,7 +7,7 @@ import { IAceEditor } from "react-ace/lib/types"
 
 const AceEditor = dynamic(() => import("react-ace"), { ssr: false })
 
-type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r"
+type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r" | "c" | "go" | "rust"
 
 const DEFAULT_CODES = {
   python: `print("Hello, Python!")`,
@@ -42,7 +42,12 @@ func main() {
   fmt.Println("Hello, Go!")
 }
 `.trim(),
+  rust: `
+fn main() {
+  println!("Hello, Rust!");
 }
+`.trim(),
+} as Record<language, string>
 
 const DEFAULT_FILES = {
   python: "main.py",
@@ -53,7 +58,8 @@ const DEFAULT_FILES = {
   r: "main.R",
   c: "main.c",
   go: "main.go",
-}
+  rust: "main.rs",
+} as Record<language, string>
 
 const LoginButton: React.FC = () => {
   const { isSignedIn, auth, ready } = useGoogleLogin()
@@ -88,7 +94,7 @@ const PlaygroundDemo: React.FC = () => {
     const submission: Submission = {
       image: `cs124/playground-runner-${mode}`,
       filesystem: [{ path, contents: content }],
-      timeout: 8000
+      timeout: 8000,
     }
     try {
       setRunning(true)
@@ -188,6 +194,7 @@ const PlaygroundDemo: React.FC = () => {
             <option value="r">R</option>
             <option value="c">C</option>
             <option value="go">Go</option>
+            <option value="rust">Rust</option>
           </select>
         </div>
       </div>
