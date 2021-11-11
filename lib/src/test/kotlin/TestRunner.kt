@@ -6,16 +6,6 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 class TestRunner : StringSpec({
-    "it should run a Python container" {
-        Submission(
-            "cs124/playground-runner-python",
-            listOf(Submission.FakeFile("main.py", """print("Hello, Python!")""")),
-            4000L
-        ).run().apply {
-            timedOut shouldBe false
-            output shouldBe "Hello, Python!"
-        }
-    }
     "it should stop a spinning container" {
         Submission(
             "cs124/playground-runner-python",
@@ -26,56 +16,6 @@ class TestRunner : StringSpec({
             1000L
         ).run().apply {
             timedOut shouldBe true
-        }
-    }
-    "it should run a CPP container" {
-        Submission(
-            "cs124/playground-runner-cpp",
-            listOf(
-                Submission.FakeFile(
-                    "main.cpp",
-                    """
-            |#include <iostream>
-            |int main() {
-            |  std::cout << "Hello, CPP!\n";
-            |  return 0;
-            |}""".trimMargin()
-                )
-            ),
-            timeout = 4000L
-        ).run().apply {
-            timedOut shouldBe false
-            output shouldBe "Hello, CPP!"
-        }
-    }
-    "it should run a Julia container" {
-        Submission(
-            "cs124/playground-runner-julia",
-            listOf(
-                Submission.FakeFile(
-                    "main.jl",
-                    """print("Hello, Julia!")"""
-                )
-            ),
-            timeout = 4000L
-        ).run().apply {
-            timedOut shouldBe false
-            output shouldBe "Hello, Julia!"
-        }
-    }
-    "it should run a R container" {
-        Submission(
-            "cs124/playground-runner-r",
-            listOf(
-                Submission.FakeFile(
-                    "main.R",
-                    """cat("Hello, R!")"""
-                )
-            ),
-            timeout = 4000L
-        ).run().apply {
-            timedOut shouldBe false
-            output shouldBe "Hello, R!"
         }
     }
     "it should run a C container" {
@@ -100,6 +40,26 @@ class TestRunner : StringSpec({
             output shouldBe "Hello, C!"
         }
     }
+    "it should run a CPP container" {
+        Submission(
+            "cs124/playground-runner-cpp",
+            listOf(
+                Submission.FakeFile(
+                    "main.cpp",
+                    """
+            |#include <iostream>
+            |int main() {
+            |  std::cout << "Hello, CPP!\n";
+            |  return 0;
+            |}""".trimMargin()
+                )
+            ),
+            timeout = 4000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, CPP!"
+        }
+    }
     "it should run a Go container" {
         Submission(
             "cs124/playground-runner-go",
@@ -119,6 +79,103 @@ class TestRunner : StringSpec({
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Go!"
+        }
+    }
+    "it should run a Haskell container" {
+        Submission(
+            "cs124/playground-runner-haskell",
+            listOf(
+                Submission.FakeFile(
+                    "main.hs",
+                    """
+                    |main = putStrLn "Hello, Haskell!"
+                    """.trimMargin()
+                )
+            ),
+            timeout = 8000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Haskell!"
+        }
+    }
+    "it should run a Java container" {
+        Submission(
+            "cs124/playground-runner-java",
+            listOf(
+                Submission.FakeFile(
+                    "Main.java",
+                    """
+                    |public class Main {
+                    |  public static void main(String[] unused) {
+                    |    System.out.println("Hello, Java!");
+                    |  }
+                    |}
+                    """.trimMargin()
+                )
+            ),
+            timeout = 4000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Java!"
+        }
+    }
+    "it should run a Julia container" {
+        Submission(
+            "cs124/playground-runner-julia",
+            listOf(
+                Submission.FakeFile(
+                    "main.jl",
+                    """print("Hello, Julia!")"""
+                )
+            ),
+            timeout = 4000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Julia!"
+        }
+    }
+    "it should run a Kotlin container" {
+        Submission(
+            "cs124/playground-runner-kotlin",
+            listOf(
+                Submission.FakeFile(
+                    "Main.kt",
+                    """
+                    |fun main() {
+                    |  println("Hello, Kotlin!")
+                    |}
+                    """.trimMargin()
+                )
+            ),
+            timeout = 8000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Kotlin!"
+        }
+    }
+    "it should run a Python container" {
+        Submission(
+            "cs124/playground-runner-python",
+            listOf(Submission.FakeFile("main.py", """print("Hello, Python!")""")),
+            4000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Python!"
+        }
+    }
+    "it should run a R container" {
+        Submission(
+            "cs124/playground-runner-r",
+            listOf(
+                Submission.FakeFile(
+                    "main.R",
+                    """cat("Hello, R!")"""
+                )
+            ),
+            timeout = 4000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, R!"
         }
     }
     "it should run a Rust container" {
