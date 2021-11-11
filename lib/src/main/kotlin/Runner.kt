@@ -128,7 +128,7 @@ data class Result(
     )
 }
 
-fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L): Result =
+fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L, maxTimeout: Long = 16000L): Result =
     CoroutineScope(Dispatchers.IO).runCatching {
 
         val started = Instant.now()
@@ -168,7 +168,8 @@ fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L): Result
             stderrThread.start()
             stdoutThread.start()
 
-            val timedOut = !process.waitFor(timeout, TimeUnit.MILLISECONDS)
+            val runTimeout = timeout.coerceAtMost(maxTimeout)
+            val timedOut = !process.waitFor(runTimeout, TimeUnit.MILLISECONDS)
             if (timedOut) {
                 val dockerStopCommand = """docker kill ${"$"}(docker ps -q --filter="name=$dockerName")"""
                 Runtime.getRuntime().exec(listOf("/bin/sh", "-c", dockerStopCommand).toTypedArray()).waitFor()
@@ -189,7 +190,7 @@ fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L): Result
 
             return@runCatching Result(
                 (stdoutLines.outputLines + stderrLines.outputLines).sortedBy { it.timestamp },
-                timeout,
+                runTimeout,
                 timedOut,
                 exitValue,
                 Result.Timings(started, tempCreated, imagePulled, containerStarted, executionStarted, completed)

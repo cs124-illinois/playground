@@ -7,7 +7,7 @@ import { IAceEditor } from "react-ace/lib/types"
 
 const AceEditor = dynamic(() => import("react-ace"), { ssr: false })
 
-type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r" | "c" | "go" | "rust"
+type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r" | "c" | "go" | "rust" | "scala3" | "kotlin"
 
 const DEFAULT_CODES = {
   python: `print("Hello, Python!")`,
@@ -47,6 +47,18 @@ fn main() {
   println!("Hello, Rust!");
 }
 `.trim(),
+  kotlin: `
+fun main() {
+  println("Hello, Kotlin!")
+}
+`.trim(),
+  scala3: `
+object Main {
+  def main(args: Array[String]) = {
+    println("Hello, Scala!")
+  }
+}
+`.trim()
 } as Record<language, string>
 
 const DEFAULT_FILES = {
@@ -59,6 +71,8 @@ const DEFAULT_FILES = {
   c: "main.c",
   go: "main.go",
   rust: "main.rs",
+  kotlin: "Main.kt",
+  scala3: "Main.sc"
 } as Record<language, string>
 
 const LoginButton: React.FC = () => {
@@ -186,15 +200,17 @@ const PlaygroundDemo: React.FC = () => {
         </button>
         <div style={{ float: "right" }}>
           <select id="language" onChange={(e) => setMode(e.target.value as language)} value={mode}>
-            <option value="python">Python</option>
-            <option value="cpp">C++</option>
-            <option value="java">Java</option>
-            <option value="haskell">Haskell</option>
-            <option value="julia">Julia</option>
-            <option value="r">R</option>
             <option value="c">C</option>
+            <option value="cpp">C++</option>
             <option value="go">Go</option>
+            <option value="haskell">Haskell</option>
+            <option value="java">Java</option>
+            <option value="julia">Julia</option>
+            <option value="kotlin">Kotlin</option>
+            <option value="r">R</option>
             <option value="rust">Rust</option>
+            <option value="scala3">Scala 3</option>
+            <option value="python">Python</option>
           </select>
         </div>
       </div>

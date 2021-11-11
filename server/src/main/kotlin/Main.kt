@@ -58,6 +58,7 @@ object DockerSpec : ConfigSpec() {
 object TopLevel : ConfigSpec("") {
     val directory by optional<String?>(null)
     val preload by optional(true)
+    val timeoutLimit by optional(8000L)
 }
 
 val configuration = Config {
@@ -110,7 +111,10 @@ fun Application.playground() {
         post("/") {
             withContext(Dispatchers.IO) {
                 try {
-                    val result = call.receive<Submission>().run(tempRoot = configuration[TopLevel.directory])
+                    val result = call.receive<Submission>().run(
+                        tempRoot = configuration[TopLevel.directory],
+                        maxTimeout = configuration[TopLevel.timeoutLimit]
+                    )
                     call.respond(result)
                 } catch (e: Exception) {
                     logger.error { e }

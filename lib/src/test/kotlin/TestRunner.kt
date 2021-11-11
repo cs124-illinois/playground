@@ -9,10 +9,15 @@ class TestRunner : StringSpec({
     "it should stop a spinning container" {
         Submission(
             "cs124/playground-runner-python",
-            listOf(Submission.FakeFile("main.py", """
+            listOf(
+                Submission.FakeFile(
+                    "main.py",
+                    """
                 |while True:
                 |  print("Hello, Python!")
-            """.trimMargin())),
+            """.trimMargin()
+                )
+            ),
             1000L
         ).run().apply {
             timedOut shouldBe true
@@ -195,6 +200,27 @@ class TestRunner : StringSpec({
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Rust!"
+        }
+    }
+    "it should run a Scala3 container" {
+        Submission(
+            "cs124/playground-runner-scala3",
+            listOf(
+                Submission.FakeFile(
+                    "Main.sc",
+                    """
+                    |object Main {
+                    |  def main(args: Array[String]) = {
+                    |    println("Hello, Scala!")
+                    |  }
+                    |}
+                    """.trimMargin()
+                )
+            ),
+            timeout = 8000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, Scala!"
         }
     }
 })
