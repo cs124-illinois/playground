@@ -4,7 +4,7 @@
   "version": "2021.11.1",
   "scripts": {
     "backend": "yarn backend:up && yarn backend:down",
-    "backend:down": "docker compose --env-file .env.development down --volumes",
+    "backend:down": "docker compose --env-file .env.development down",
     "backend:up": "docker compose --env-file .env.development up",
     "build": "next build",
     "deploy": "gh-pages -t -d dist",
