@@ -1,6 +1,6 @@
 {
   "name": "@cs124/playground-types",
-  "version": "2021.11.2",
+  "version": "2021.11.3",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
@@ -18,15 +18,15 @@
     "runtypes": ">= 6"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
-    "eslint": "8.2.0",
+    "@typescript-eslint/eslint-plugin": "5.4.0",
+    "@typescript-eslint/parser": "5.4.0",
+    "eslint": "8.3.0",
     "eslint-config-prettier": "8.3.0",
     "npm-check-updates": "12.0.2",
     "prettier": "2.4.1",
     "prettier-package-json": "2.6.0",
     "prettier-plugin-organize-imports": "2.3.4",
     "rimraf": "3.0.2",
-    "typescript": "4.4.4"
+    "typescript": "4.5.2"
   }
 }

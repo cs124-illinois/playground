@@ -58,7 +58,7 @@ object Main {
     println("Hello, Scala!")
   }
 }
-`.trim()
+`.trim(),
 } as Record<language, string>
 
 const DEFAULT_FILES = {
@@ -72,7 +72,7 @@ const DEFAULT_FILES = {
   go: "main.go",
   rust: "main.rs",
   kotlin: "Main.kt",
-  scala3: "Main.sc"
+  scala3: "Main.sc",
 } as Record<language, string>
 
 const LoginButton: React.FC = () => {

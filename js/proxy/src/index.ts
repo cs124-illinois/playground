@@ -76,23 +76,31 @@ router.post("/", async (ctx) => {
     })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
-    collection?.insertOne(
-      Object.assign(
-        { succeeded: false, ...request, start, end: new Date(), ip: ctx.request.ip, err },
-        String.guard(process.env.SEMESTER) ? { semester: process.env.SEMESTER } : null,
-        ctx.email ? { email: ctx.email } : null
-      )
-    )
+    collection?.insertOne({
+      succeeded: false,
+      ...request,
+      start,
+      end: new Date(),
+      ip: ctx.request.ip,
+      err,
+      ...(String.guard(process.env.SEMESTER) && { semester: process.env.SEMESTER }),
+      ...(ctx.email && { email: ctx.email }),
+      ...(ctx.headers.origin && { origin: ctx.headers.origin }),
+    })
+
     return ctx.throw(400, err.toString())
   }
   ctx.body = response
-  collection?.insertOne(
-    Object.assign(
-      { succeeded: true, ...response, start, end: new Date(), ip: ctx.request.ip },
-      String.guard(process.env.SEMESTER) ? { semester: process.env.SEMESTER } : null,
-      ctx.email ? { email: ctx.email } : null
-    )
-  )
+  collection?.insertOne({
+    succeeded: true,
+    ...response,
+    start,
+    end: new Date(),
+    ip: ctx.request.ip,
+    ...(String.guard(process.env.SEMESTER) && { semester: process.env.SEMESTER }),
+    ...(ctx.email && { email: ctx.email }),
+    ...(ctx.headers.origin && { origin: ctx.headers.origin }),
+  })
 })
 
 const db = new Map()

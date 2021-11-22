@@ -32,7 +32,8 @@ services:
   dind:
     image: "docker:19.03-dind"
     entrypoint:
-      /bin/sh -c "rm -f /var/run/docker.pid && rm -f /var/run/docker/containerd/containerd.pid && dockerd --host=tcp://0.0.0.0:2375"
+      /bin/sh -c "rm -f /var/run/docker.pid && rm -f /var/run/docker/containerd/containerd.pid && dockerd
+      --host=tcp://0.0.0.0:2375"
     privileged: true
     volumes:
       - "./grading/:/grading/"
