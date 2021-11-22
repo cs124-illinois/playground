@@ -57,7 +57,7 @@ class TestMain : StringSpec() {
             val username = System.getenv("DOCKER_USER")
             val password = System.getenv("DOCKER_PASSWORD")
             if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
-                listPlaygroundImages(username, password).results.filter { it.name.startsWith("playground-runner-") } shouldHaveSize 10
+                listPlaygroundImages(username, password).results.filter { it.name.startsWith("playground-runner-") } shouldHaveSize 11
             }
         }
     }

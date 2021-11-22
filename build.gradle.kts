@@ -8,7 +8,7 @@ plugins {
 }
 subprojects {
     group = "com.github.cs124-illinois.playground"
-    version = "2021.11.2"
+    version = "2021.11.3"
     tasks.withType<KotlinCompile> {
         val javaVersion = JavaVersion.VERSION_16.toString()
         sourceCompatibility = javaVersion
