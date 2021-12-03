@@ -223,4 +223,25 @@ class TestRunner : StringSpec({
             output shouldBe "Hello, Scala!"
         }
     }
+    "it should run a C# container" {
+        Submission(
+            "cs124/playground-runner-csharp",
+            listOf(
+                Submission.FakeFile(
+                    "Main.cs",
+                    """
+                    |public class Main {
+                    |  public static void Main(string[] args) {
+                    |    System.Console.WriteLine("Hello, C#!");
+                    |  }
+                    |}
+                    """.trimMargin()
+                )
+            ),
+            timeout = 4000L
+        ).run().apply {
+            timedOut shouldBe false
+            output shouldBe "Hello, C#!"
+        }
+    }
 })
