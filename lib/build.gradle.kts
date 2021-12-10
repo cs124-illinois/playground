@@ -5,16 +5,16 @@ plugins {
     id("org.jmailen.kotlinter")
 }
 dependencies {
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.13.0")
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.31")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
-    implementation("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
     implementation("org.zeroturnaround:zt-process-killer:1.10")
     implementation("ch.qos.logback:logback-classic:1.2.7")
-    implementation("io.github.microutils:kotlin-logging:2.1.0")
+    implementation("io.github.microutils:kotlin-logging:2.1.15")
 
-    testImplementation("io.kotest:kotest-runner-junit5:4.6.3")
+    testImplementation("io.kotest:kotest-runner-junit5:5.0.1")
 }
 tasks {
     val sourcesJar by creating(Jar::class) {
@@ -33,6 +33,7 @@ publishing {
     }
 }
 kapt {
+    useBuildCache = true
     includeCompileClasspath = false
     javacOptions {
         option("--illegal-access", "permit")
