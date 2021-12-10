@@ -12,20 +12,20 @@ type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r" | "c" | "g
 const DEFAULT_CODES = {
   python: `print("Hello, Python!")`,
   cpp: `
-  #include <iostream>
-  int main() {
-      std::cout << "Hello, CPP!\\n";
-      return 0;
-  }`.trim(),
+#include <iostream>
+int main() {
+  std::cout << "Hello, CPP!\\n";
+  return 0;
+}`.trim(),
   haskell: `
-  main = putStrLn "Hello, Haskell!"
+main = putStrLn "Hello, Haskell!"
   `.trim(),
   java: `
-  public class Main {
-    public static void main(String[] unused) {
-      System.out.println("Hello, Java!");
-    }
+public class Main {
+  public static void main(String[] unused) {
+    System.out.println("Hello, Java!");
   }
+}
   `.trim(),
   julia: `print("Hello, Julia!")`,
   r: `cat("Hello, R!")`,

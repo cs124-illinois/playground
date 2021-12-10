@@ -1,4 +1,4 @@
-FROM node:14.8-alpine
+FROM node:14.18-alpine
 
 ARG VERSION
 ENV VERSION=$VERSION
