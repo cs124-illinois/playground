@@ -9,8 +9,8 @@ plugins {
     kotlin("kapt")
     application
     id("org.jmailen.kotlinter")
-    id("com.github.johnrengelman.shadow") version "7.1.1"
-    id("com.palantir.docker") version "0.31.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.palantir.docker") version "0.32.0"
     id("co.uzzu.dotenv.gradle") version "1.2.0"
 }
 dependencies {
@@ -25,12 +25,12 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
     implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
     implementation("com.github.cs125-illinois:ktor-moshi:2021.12.0")
-    implementation("org.slf4j:slf4j-api:1.7.32")
+    implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("ch.qos.logback:logback-classic:1.2.10")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
     implementation("com.uchuhimo:konf-core:1.1.2")
 
-    testImplementation("io.kotest:kotest-runner-junit5:5.0.3")
+    testImplementation("io.kotest:kotest-runner-junit5:5.1.0")
     testImplementation("io.kotest:kotest-assertions-ktor:4.4.3")
     testImplementation("io.ktor:ktor-server-test-host:1.6.7")
 }
@@ -57,8 +57,6 @@ application {
 }
 docker {
     name = "cs124/playground"
-    tag("latest", "cs124/playground:latest")
-    tag(version.toString(), "cs124/playground:$version")
     files(tasks["shadowJar"].outputs)
 }
 kapt {

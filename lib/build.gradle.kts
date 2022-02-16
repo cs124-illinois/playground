@@ -14,7 +14,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.10")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
 
-    testImplementation("io.kotest:kotest-runner-junit5:5.0.3")
+    testImplementation("io.kotest:kotest-runner-junit5:5.1.0")
 }
 tasks {
     val sourcesJar by creating(Jar::class) {
