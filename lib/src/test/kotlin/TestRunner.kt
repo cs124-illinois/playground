@@ -15,7 +15,7 @@ class TestRunner : StringSpec({
                     """
                 |while True:
                 |  print("Hello, Python!")
-            """.trimMargin()
+                    """.trimMargin()
                 )
             ),
             1000L
@@ -56,7 +56,8 @@ class TestRunner : StringSpec({
             |int main() {
             |  std::cout << "Hello, CPP!\n";
             |  return 0;
-            |}""".trimMargin()
+            |}
+                    """.trimMargin()
                 )
             ),
             timeout = 4000L

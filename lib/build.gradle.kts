@@ -1,20 +1,19 @@
 plugins {
     kotlin("jvm")
-    kotlin("kapt")
+    kotlin("plugin.serialization")
     `maven-publish`
     id("org.jmailen.kotlinter")
 }
 dependencies {
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.13.0")
-
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-    implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     implementation("org.zeroturnaround:zt-process-killer:1.10")
-    implementation("ch.qos.logback:logback-classic:1.2.10")
+    implementation("ch.qos.logback:logback-classic:1.2.11")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 
-    testImplementation("io.kotest:kotest-runner-junit5:5.1.0")
+    testImplementation("io.kotest:kotest-runner-junit5:5.2.3")
 }
 tasks {
     val sourcesJar by creating(Jar::class) {
@@ -30,13 +29,6 @@ publishing {
         create<MavenPublication>("lib") {
             from(components["java"])
         }
-    }
-}
-kapt {
-    useBuildCache = true
-    includeCompileClasspath = false
-    javacOptions {
-        option("--illegal-access", "permit")
     }
 }
 kotlin {

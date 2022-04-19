@@ -1,8 +1,10 @@
 package edu.illinois.cs.cs124.playground
 
-import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
 import mu.KotlinLogging
 import org.zeroturnaround.process.ProcessUtil
 import org.zeroturnaround.process.Processes
@@ -10,7 +12,6 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.time.Instant
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
@@ -20,7 +21,7 @@ import kotlin.io.path.writeBytes
 
 private val logger = KotlinLogging.logger {}
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class OutputLine(
     val console: Console,
     val timestamp: Instant,
@@ -43,19 +44,19 @@ class StreamGobbler(
                 return@forEach
             }
             if (outputLines.isEmpty()) {
-                started = Instant.now()
+                started = Clock.System.now()
             }
             if (outputLines.isEmpty() && line.trim() == "...starting...") {
                 return@forEach
             }
-            outputLines.add(OutputLine(console, Instant.now(), line))
+            outputLines.add(OutputLine(console, Clock.System.now(), line))
         }
     }
 }
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Submission(val image: String, val filesystem: List<FakeFile> = listOf(), val timeout: Long) {
-    @JsonClass(generateAdapter = true)
+    @Serializable
     data class FakeFile(val path: String, val contents: String)
 }
 
@@ -107,7 +108,7 @@ fun String.inspect(): Boolean = CoroutineScope(Dispatchers.IO).run {
         }
 }
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Result(
     val outputLines: List<OutputLine>,
     val timeout: Long,
@@ -117,7 +118,7 @@ data class Result(
 ) {
     val output: String = outputLines.output()
 
-    @JsonClass(generateAdapter = true)
+    @Serializable
     data class Timings(
         val started: Instant,
         val tempCreated: Instant,
@@ -131,7 +132,7 @@ data class Result(
 fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L, maxTimeout: Long = 16000L): Result =
     CoroutineScope(Dispatchers.IO).runCatching {
 
-        val started = Instant.now()
+        val started = Clock.System.now()
         val directory = if (tempRoot == null) {
             createTempDirectory("playground")
         } else {
@@ -141,14 +142,14 @@ fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L, maxTime
         filesystem.forEach { (path, contents) ->
             directory.resolve(path).writeBytes(contents.toByteArray())
         }
-        val tempCreated = Instant.now()
+        val tempCreated = Clock.System.now()
         try {
             if (!image.inspect()) {
                 logger.debug { "Run requires loading $image" }
                 image.load(pullTimeout)
                 logger.debug { "Completed image pull" }
             }
-            val imagePulled = Instant.now()
+            val imagePulled = Clock.System.now()
 
             val dockerName = UUID.randomUUID().toString()
             val command =
@@ -159,7 +160,7 @@ fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L, maxTime
             val processBuilder =
                 ProcessBuilder(*listOf("/bin/sh", "-c", command).toTypedArray()).directory(directory.toFile())
 
-            val containerStarted = Instant.now()
+            val containerStarted = Clock.System.now()
             val process = processBuilder.start()
             val stdoutLines = StreamGobbler(OutputLine.Console.STDOUT, process.inputStream)
             val stderrLines = StreamGobbler(OutputLine.Console.STDERR, process.errorStream)
@@ -178,7 +179,7 @@ fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L, maxTime
             val completed = if (timedOut) {
                 null
             } else {
-                Instant.now()
+                Clock.System.now()
             }
             val exitValue = process.exitValue()
 

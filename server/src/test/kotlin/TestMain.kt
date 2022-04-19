@@ -1,33 +1,38 @@
 @file:Suppress("MagicNumber")
 
+import edu.illinois.cs.cs124.playground.Result
 import edu.illinois.cs.cs124.playground.Submission
+import edu.illinois.cs.cs124.playground.server.Status
 import edu.illinois.cs.cs124.playground.server.listPlaygroundImages
 import edu.illinois.cs.cs124.playground.server.playground
-import edu.illinois.cs.cs124.playground.server.resultFrom
-import edu.illinois.cs.cs124.playground.server.statusFrom
 import edu.illinois.cs.cs124.playground.server.toJson
 import edu.illinois.cs.cs124.playground.server.versionString
-import io.kotest.assertions.ktor.shouldHaveStatus
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import io.ktor.application.Application
-import io.ktor.http.HttpMethod
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import io.ktor.server.testing.withTestApplication
+import io.ktor.server.testing.testApplication
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 @Suppress("LargeClass")
 class TestMain : StringSpec() {
     init {
         "should GET status" {
-            withTestApplication(Application::playground) {
-                handleRequest(HttpMethod.Get, "/") {
-                    addHeader("content-type", "application/json")
-                }.apply {
-                    response.shouldHaveStatus(HttpStatusCode.OK.value)
-                    statusFrom(response.content).apply {
+            testApplication {
+                application {
+                    playground()
+                }
+                client.get("/") {
+                    header("content-type", "application/json")
+                }.let { response ->
+                    response.status shouldBe HttpStatusCode.OK
+                    statusFrom(response.bodyAsText()).apply {
                         version shouldBe versionString
                     }
                 }
@@ -40,13 +45,17 @@ class TestMain : StringSpec() {
                     listOf(Submission.FakeFile("main.py", """print("Hello, Python!")""")),
                     4000L
                 ).toJson()
-            withTestApplication(Application::playground) {
-                handleRequest(HttpMethod.Post, "/") {
-                    addHeader("content-type", "application/json")
+
+            testApplication {
+                application {
+                    playground()
+                }
+                client.post("/") {
+                    header("content-type", "application/json")
                     setBody(submission)
-                }.apply {
-                    response.shouldHaveStatus(HttpStatusCode.OK.value)
-                    resultFrom(response.content).apply {
+                }.let { response ->
+                    response.status shouldBe HttpStatusCode.OK
+                    resultFrom(response.bodyAsText()).apply {
                         timedOut shouldBe false
                         output shouldBe "Hello, Python!"
                     }
@@ -61,4 +70,14 @@ class TestMain : StringSpec() {
             }
         }
     }
+}
+
+fun statusFrom(response: String?): Status {
+    check(response != null) { "can't deserialize null string" }
+    return Json.decodeFromString(response)
+}
+
+fun resultFrom(response: String?): Result {
+    check(response != null) { "can't deserialize null string" }
+    return Json.decodeFromString(response)
 }
