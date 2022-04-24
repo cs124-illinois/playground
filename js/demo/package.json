@@ -16,7 +16,7 @@
     "prettier": "prettier -w --plugin=prettier-plugin-organize-imports . && prettier-package-json --write"
   },
   "dependencies": {
-    "@cs124/playground-react": "2021.12.0",
+    "@cs124/playground-react": "2022.4.0",
     "@cs124/react-google-login": "2021.11.0",
     "next": "12.1.5",
     "react": "18.0.0",

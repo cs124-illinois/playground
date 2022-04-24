@@ -1,6 +1,6 @@
 {
   "name": "@cs124/playground-types",
-  "version": "2021.11.3",
+  "version": "2022.4.0",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
