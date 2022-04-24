@@ -1,7 +1,7 @@
 FROM openjdk:16-slim
 
 ENV KOTLIN_ROOT /opt/kotlinc
-ENV KOTLIN_VERSION 1.5.31
+ENV KOTLIN_VERSION 1.6.21
 ENV PATH $PATH:$KOTLIN_ROOT/bin
 
 RUN apt update \
