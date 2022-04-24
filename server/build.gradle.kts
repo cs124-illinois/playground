@@ -13,7 +13,7 @@ plugins {
     id("com.palantir.docker") version "0.33.0"
 }
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
     implementation(project(":lib"))
 
     implementation("io.ktor:ktor-server-netty:2.0.0")

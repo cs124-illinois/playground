@@ -5,7 +5,7 @@ plugins {
     id("org.jmailen.kotlinter")
 }
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.20")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     implementation("org.zeroturnaround:zt-process-killer:1.10")
     implementation("ch.qos.logback:logback-classic:1.2.11")

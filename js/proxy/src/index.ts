@@ -2,29 +2,21 @@ import { googleLogin } from "@cs124/koa-google-login"
 import { Result, Status, Submission } from "@cs124/playground-types"
 import cors from "@koa/cors"
 import Router from "@koa/router"
-import { createHttpTerminator } from "http-terminator"
+import retryBuilder from "fetch-retry"
+import originalFetch from "isomorphic-fetch"
 import Koa, { Context } from "koa"
 import koaBody from "koa-body"
 import ratelimit from "koa-ratelimit"
 import { MongoClient } from "mongodb"
 import mongodbUri from "mongodb-uri"
-import originalFetch, { Response as FetchResponse } from "node-fetch"
 import { String } from "runtypes"
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fetch = require("fetch-retry")(originalFetch)
+
+const fetch = retryBuilder(originalFetch)
 
 const BACKEND = String.check(process.env.PLAYGROUND_SERVER)
 
-const { username, database } = String.guard(process.env.MONGODB)
-  ? mongodbUri.parse(process.env.MONGODB)
-  : { username: undefined, database: undefined }
-const client = String.guard(process.env.MONGODB)
-  ? MongoClient.connect(process.env.MONGODB, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      ...(username && { authMechanism: "SCRAM-SHA-1" }),
-    })
-  : undefined
+const { database } = String.guard(process.env.MONGODB) ? mongodbUri.parse(process.env.MONGODB) : { database: undefined }
+const client = String.guard(process.env.MONGODB) ? MongoClient.connect(process.env.MONGODB) : undefined
 const _collection = client?.then((c) => c.db(database).collection(process.env.MONGODB_COLLECTION || "playground"))
 const validDomains = process.env.VALID_DOMAINS?.split(",").map((s) => s.trim())
 
@@ -47,7 +39,7 @@ const STATUS = Object.assign(
 const getStatus = async (retries = 0) => {
   return {
     ...STATUS,
-    status: Status.check(await fetch(BACKEND, { retries, retryDelay: 2000 }).then((r: FetchResponse) => r.json())),
+    status: Status.check(await fetch(BACKEND, { retries, retryDelay: 2000 }).then((r: Response) => r.json())),
   }
 }
 
@@ -59,7 +51,7 @@ router.post("/", async (ctx) => {
   const collection = await _collection
   const request = Submission.check(ctx.request.body)
   request.timeout = 8000
-  let response: Response
+  let response: Result
   try {
     response = await fetch(BACKEND, {
       method: "POST",
@@ -144,17 +136,18 @@ const server = new Koa({ proxy: true })
 
 Promise.resolve().then(async () => {
   await _collection
-  console.log(await getStatus(process.env.STARTUP_RETRY_COUNT ? parseInt(process.env.STARTUP_RETRY_COUNT) : 8))
-  const s = server.listen(process.env.PORT || 8888)
+  getStatus(process.env.STARTUP_RETRY_COUNT ? parseInt(process.env.STARTUP_RETRY_COUNT) : 32).then((s) => {
+    console.log(s)
+  })
+  server.listen(process.env.PORT || 8888)
   server.on("error", (err) => {
     console.error(err)
-  })
-  const terminator = createHttpTerminator({ server: s })
-  process.on("SIGTERM", async () => {
-    await terminator.terminate()
-    process.exit(0)
   })
 })
 process.on("uncaughtException", (err) => {
   console.error(err)
+})
+process.on("unhandledRejection", (err) => {
+  console.error(err)
+  process.exit(-1)
 })

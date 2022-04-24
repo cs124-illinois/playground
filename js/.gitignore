@@ -1,3 +1,4 @@
 node_modules
+bundled
 dist
 yarn-error.log

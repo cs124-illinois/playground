@@ -7,6 +7,7 @@
     "**/.DS_Store": true,
     "**/.rush": true,
     "**/dist": true,
+    "**/bundled": true,
     "**/node_modules": true,
     "**/*.build.log": true,
     "**/.tsconfig.tsbuildinfo": true,
@@ -14,6 +15,8 @@
     "**/public": true,
     "**/.deploy": true,
     "**/.next": true,
+    "proxy/playground": true,
+    "**/yarn-error.log": true
   },
   "emmet.showExpandedAbbreviation": "never",
   "files.trimTrailingWhitespace": true,

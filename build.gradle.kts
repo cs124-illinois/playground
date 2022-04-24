@@ -1,15 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.20" apply false
-    kotlin("plugin.serialization") version "1.6.20" apply false
+    kotlin("jvm") version "1.6.21" apply false
+    kotlin("plugin.serialization") version "1.6.21" apply false
     id("org.jmailen.kotlinter") version "3.10.0" apply false
     id("com.github.ben-manes.versions") version "0.42.0"
     id("co.uzzu.dotenv.gradle") version "2.0.0"
 }
 subprojects {
     group = "com.github.cs124-illinois.playground"
-    version = "2022.4.0"
+    version = "2022.4.1"
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_16.toString()

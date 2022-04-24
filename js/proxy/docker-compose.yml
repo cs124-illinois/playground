@@ -1,0 +1,44 @@
+version: "3"
+services:
+  proxy:
+    image: cs124/playground-proxy:latest
+    pull_policy: build
+    build: .
+    environment:
+      - PLAYGROUND_SERVER=http://playground:8888
+      - MONGODB=mongodb://mongodb:27017/playground_demo
+      - GOOGLE_CLIENT_IDS=948918026196-q49uid1opmf7oid570ptpl7kd1alcjru.apps.googleusercontent.com
+    ports:
+      - 8888:8888
+    depends_on:
+      - playground
+      - mongodb
+    volumes:
+      - ./bundled:/server/bundled
+  playground:
+    image: cs124/playground:latest
+    depends_on:
+      - dind
+    environment:
+      - PLAYGROUND_LOG_LEVEL:TRACE
+      - DOCKER_HOST=dind:2375
+      - DIRECTORY=/playground/
+      - DOCKER_USER=${DOCKER_USER}
+      - DOCKER_PASSWORD=${DOCKER_PASSWORD}
+    volumes:
+      - ./playground/:/playground/
+  mongodb:
+    image: bitnami/mongodb:4.4.3
+    volumes:
+      - mongodb_data:/bitnami
+  dind:
+    image: docker:20.10-dind
+    entrypoint:
+      /bin/sh -c "rm -f /var/run/docker.pid && rm -f /var/run/docker/containerd/containerd.pid && dockerd
+      --host=tcp://0.0.0.0:2375"
+    privileged: true
+    volumes:
+      - ./playground/:/playground/
+volumes:
+  mongodb_data:
+    driver: local
