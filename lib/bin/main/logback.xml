@@ -1,0 +1,5 @@
+<configuration>
+    <variable name="PLAYGROUND_LOG_LEVEL" value="${PLAYGROUND_LOG_LEVEL:-INFO}" />
+    <logger name="com.github.jknack.handlebars" level="info" />
+    <logger name="edu.illinois.cs.cs124.playground" level="${PLAYGROUND_LOG_LEVEL}" />
+</configuration>
