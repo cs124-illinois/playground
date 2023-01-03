@@ -1,4 +1,4 @@
-FROM openjdk:16-jdk-slim
+FROM openjdk:17-jdk-buster
 
 RUN apt update && \
     apt install -y --no-install-recommends software-properties-common ca-certificates gpg-agent ssh curl bash gnupg
@@ -8,4 +8,4 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
 
 WORKDIR /
 COPY *.jar playground.jar
-CMD [ "java", "-ea", "--enable-preview", "-XX:+ExitOnOutOfMemoryError", "--illegal-access=permit", "-jar", "playground.jar" ]
+CMD [ "java", "-ea", "--enable-preview", "-XX:+ExitOnOutOfMemoryError", "-jar", "playground.jar" ]

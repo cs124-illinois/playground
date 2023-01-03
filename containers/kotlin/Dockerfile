@@ -1,7 +1,7 @@
-FROM openjdk:16-slim
+FROM openjdk:17-slim
 
 ENV KOTLIN_ROOT /opt/kotlinc
-ENV KOTLIN_VERSION 1.6.21
+ENV KOTLIN_VERSION 1.8.0
 ENV PATH $PATH:$KOTLIN_ROOT/bin
 
 RUN apt update \

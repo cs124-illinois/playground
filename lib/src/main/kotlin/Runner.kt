@@ -55,7 +55,7 @@ class StreamGobbler(
 }
 
 @Serializable
-data class Submission(val image: String, val filesystem: List<FakeFile> = listOf(), val timeout: Long) {
+data class Submission(val image: String, val filesystem: List<FakeFile> = listOf(), val timeout: Long = MAX_TIMEOUT) {
     @Serializable
     data class FakeFile(val path: String, val contents: String)
 }
@@ -129,7 +129,9 @@ data class Result(
     )
 }
 
-fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L, maxTimeout: Long = 16000L): Result =
+const val MAX_TIMEOUT = 64 * 1000L
+
+fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L, maxTimeout: Long = MAX_TIMEOUT): Result =
     CoroutineScope(Dispatchers.IO).runCatching {
 
         val started = Clock.System.now()
@@ -153,7 +155,7 @@ fun Submission.run(tempRoot: String? = null, pullTimeout: Long = 60000L, maxTime
 
             val dockerName = UUID.randomUUID().toString()
             val command =
-                "docker run --init --rm --network=none --name=$dockerName -v ${directory.absolutePathString()}:/playground $image"
+                "docker run --init --rm --network=none --name=$dockerName --platform=linux/amd64 -v ${directory.absolutePathString()}:/playground $image"
 
             logger.trace { "Running $command with timeout $timeout" }
             @Suppress("SpreadOperator")

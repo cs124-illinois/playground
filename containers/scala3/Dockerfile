@@ -1,7 +1,7 @@
 FROM adoptopenjdk/openjdk11
 
 ENV SCALA_ROOT /opt/scala3
-ENV SCALA_VERSION 3.1.2
+ENV SCALA_VERSION 3.2.1
 ENV PATH $PATH:$SCALA_ROOT/bin
 
 RUN apt update \

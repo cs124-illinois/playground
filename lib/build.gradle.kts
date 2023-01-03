@@ -5,15 +5,15 @@ plugins {
     id("org.jmailen.kotlinter")
 }
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+    // implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.zeroturnaround:zt-process-killer:1.10")
-    implementation("ch.qos.logback:logback-classic:1.2.11")
-    implementation("io.github.microutils:kotlin-logging:2.1.21")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+    implementation("ch.qos.logback:logback-classic:1.4.5")
+    implementation("io.github.microutils:kotlin-logging:3.0.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
-    testImplementation("io.kotest:kotest-runner-junit5:5.2.3")
+    testImplementation("io.kotest:kotest-runner-junit5:5.5.4")
 }
 tasks {
     val sourcesJar by creating(Jar::class) {
