@@ -1,5 +1,5 @@
 import { Result, Status, Submission } from "@cs124/playground-types"
-import React, { useCallback, useContext, useEffect, useState } from "react"
+import React, { PropsWithChildren, useCallback, useContext, useEffect, useState } from "react"
 
 export interface PlaygroundContext {
   available: boolean
@@ -13,7 +13,11 @@ interface PlaygroundProviderProps {
   googleToken?: string | undefined
 }
 
-export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({ googleToken, server, children }) => {
+export const PlaygroundProvider: React.FC<PropsWithChildren & PlaygroundProviderProps> = ({
+  googleToken,
+  server,
+  children,
+}) => {
   const [status, setStatus] = useState<Status | undefined>(undefined)
 
   useEffect(() => {
