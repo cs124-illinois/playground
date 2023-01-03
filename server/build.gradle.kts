@@ -60,4 +60,33 @@ tasks.test {
     environment["DOCKER_USER"] = env.fetch("DOCKER_USER", "")
     environment["DOCKER_PASSWORD"] = env.fetch("DOCKER_PASSWORD", "")
 }
+val dockerName = "cs124/playground"
+tasks.register<Copy>("dockerCopyJar") {
+    from(tasks["shadowJar"].outputs)
+    into("${buildDir}/docker")
+}
+tasks.register<Copy>("dockerCopyDockerfile") {
+    from("${projectDir}/Dockerfile")
+    into("${buildDir}/docker")
+}
+tasks.register<Exec>("dockerBuild") {
+    dependsOn("dockerCopyJar", "dockerCopyDockerfile")
+    workingDir("${buildDir}/docker")
+    environment("DOCKER_BUILDKIT", "1")
+    commandLine(
+        ("docker build . " +
+            "-t ${dockerName}:latest " +
+            "-t ${dockerName}:${project.version}").split(" ")
+    )
+}
+tasks.register<Exec>("dockerPush") {
+    dependsOn("dockerCopyJar", "dockerCopyDockerfile")
+    workingDir("${buildDir}/docker")
+    commandLine(
+        ("docker buildx build . --platform=linux/amd64,linux/arm64/v8 " +
+            "--builder multiplatform " +
+            "--tag ${dockerName}:latest " +
+            "--tag ${dockerName}:${project.version} --push").split(" ")
+    )
+}
 
