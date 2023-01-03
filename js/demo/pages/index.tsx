@@ -30,7 +30,7 @@ public class Main {
   julia: `print("Hello, Julia!")`,
   r: `cat("Hello, R!")`,
   c: `#include <stdio.h>
-int main () {
+int main (void) {
   printf("Hello, C!\\n");
   return 0;
 }
