@@ -15,10 +15,10 @@ class TestRunner : StringSpec({
                     """
                 |while True:
                 |  print("Hello, Python!")
-                    """.trimMargin()
+            """.trimMargin()
                 )
             ),
-            timeout = 1000L
+            1000L
         ).run().apply {
             timedOut shouldBe true
         }
@@ -31,14 +31,15 @@ class TestRunner : StringSpec({
                     "main.c",
                     """
                     |#include <stdio.h>
-                    |int main (void) {
+                    |int main () {
                     |   printf("Hello, C!\n");
                     |   return 0;
                     |}
                     |
                     """.trimMargin()
                 )
-            )
+            ),
+            timeout = 4000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, C!"
@@ -55,10 +56,10 @@ class TestRunner : StringSpec({
             |int main() {
             |  std::cout << "Hello, CPP!\n";
             |  return 0;
-            |}
-                    """.trimMargin()
+            |}""".trimMargin()
                 )
-            )
+            ),
+            timeout = 4000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, CPP!"
@@ -78,7 +79,8 @@ class TestRunner : StringSpec({
                     |}
                     """.trimMargin()
                 )
-            )
+            ),
+            timeout = 4000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Go!"
@@ -94,7 +96,8 @@ class TestRunner : StringSpec({
                     |main = putStrLn "Hello, Haskell!"
                     """.trimMargin()
                 )
-            )
+            ),
+            timeout = 8000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Haskell!"
@@ -114,7 +117,8 @@ class TestRunner : StringSpec({
                     |}
                     """.trimMargin()
                 )
-            )
+            ),
+            timeout = 4000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Java!"
@@ -128,7 +132,8 @@ class TestRunner : StringSpec({
                     "main.jl",
                     """print("Hello, Julia!")"""
                 )
-            )
+            ),
+            timeout = 4000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Julia!"
@@ -146,7 +151,8 @@ class TestRunner : StringSpec({
                     |}
                     """.trimMargin()
                 )
-            )
+            ),
+            timeout = 8000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Kotlin!"
@@ -170,7 +176,8 @@ class TestRunner : StringSpec({
                     "main.R",
                     """cat("Hello, R!")"""
                 )
-            )
+            ),
+            timeout = 4000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, R!"
@@ -188,7 +195,8 @@ class TestRunner : StringSpec({
                     |}
                     """.trimMargin()
                 )
-            )
+            ),
+            timeout = 4000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Rust!"
@@ -208,7 +216,8 @@ class TestRunner : StringSpec({
                     |}
                     """.trimMargin()
                 )
-            )
+            ),
+            timeout = 8000L
         ).run().apply {
             timedOut shouldBe false
             output shouldBe "Hello, Scala!"

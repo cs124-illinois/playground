@@ -7,7 +7,7 @@ import { IAceEditor } from "react-ace/lib/types"
 
 const AceEditor = dynamic(() => import("react-ace"), { ssr: false })
 
-type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r" | "c" | "go" | "rust" | "scala3" | "kotlin"
+type language = "python" | "cpp" | "haskell" | "java" | "julia" | "r" | "c" | "go" | "rust" | "scala3" | "kotlin" | "csharp"
 
 const DEFAULT_CODES = {
   python: `print("Hello, Python!")`,
@@ -59,6 +59,13 @@ object Main {
   }
 }
 `.trim(),
+  csharp: `
+  public class Main {
+    public static void Main(string[] args) {
+      System.Console.WriteLine("Hello, C#!");
+    }
+  }
+  `.trim(),
 } as Record<language, string>
 
 const DEFAULT_FILES = {
@@ -73,6 +80,7 @@ const DEFAULT_FILES = {
   rust: "main.rs",
   kotlin: "Main.kt",
   scala3: "Main.sc",
+  csharp: "main.cs",
 } as Record<language, string>
 
 const LoginButton: React.FC = () => {
@@ -202,6 +210,7 @@ const PlaygroundDemo: React.FC = () => {
           <select id="language" onChange={(e) => setMode(e.target.value as language)} value={mode}>
             <option value="c">C</option>
             <option value="cpp">C++</option>
+            <option value="csharp">C#</option>
             <option value="go">Go</option>
             <option value="haskell">Haskell</option>
             <option value="java">Java</option>
